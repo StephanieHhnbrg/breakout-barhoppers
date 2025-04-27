@@ -35,7 +35,6 @@ jobs:
           npm run build-prod
 
           cp -r "./dist/breakout-barhoppers/browser/" "./docs"
-          cp "./dist/breakout-barhoppers/prerendered-routes.json" "./docs"
           cp "./dist/breakout-barhoppers/3rdpartylicenses.txt" "./docs"
           cp "./docs/index.html" "./docs/404.html"
 
