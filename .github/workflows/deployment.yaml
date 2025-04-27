@@ -23,7 +23,11 @@ jobs:
 
       - name: 💽 Install dependencies
         run: |
-          npm ci
+          npm ci --force
+
+      - name: 🔒 Update environment variable with gh secrets
+        run: |
+          sed -i "s/GOOGLE_LOGIN_ID/${{ secrets.GOOGLE_LOGIN_PROVIDER }}/g" ./src/environments/environment.prod.ts
 
       - name: 🚧 Build project for production
         run: |
@@ -37,6 +41,7 @@ jobs:
 
       - name: 🎉 Commit & Push
         run: |
+          git restore ./src/environments/environment.prod.ts
           git add .
           git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
           git config --global user.email "username@users.noreply.github.com"
