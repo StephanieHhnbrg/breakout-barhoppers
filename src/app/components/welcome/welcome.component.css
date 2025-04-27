@@ -1,0 +1,39 @@
+.column {
+  flex-direction: column;
+  display: flex;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.row {
+  flex-direction: row;
+  display: flex;
+  justify-content: space-between;
+}
+
+
+
+.chip {
+  background: #833AB4;
+  background: linear-gradient(90deg, rgba(131, 58, 180, 1) 0%, rgba(253, 29, 29, 1) 50%, rgba(252, 176, 69, 1) 100%);
+  border-radius: 20px;
+  padding: 3px 10px;
+  color: white;
+  width: auto;
+  justify-content: center;
+  vertical-align: middle;
+}
+
+.chip:hover {
+  cursor: pointer;
+}
+
+mat-icon {
+  transform: scale(0.8) translateY(8px);
+}
+
+.content {
+  padding: 25px 10px 10px;
+}
+
+

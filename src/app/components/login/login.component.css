@@ -1,0 +1,32 @@
+.content {
+  height: 100%;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  vertical-align: middle;
+}
+
+app-g-login-button {
+  width: 100%;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+}
+
+.buttons mat-icon {
+  transform: scale(0.8) translateY(7px);
+}
+
+.buttons a, .buttons a:visited  {
+  text-align: center;
+  color: green;
+  text-decoration: none;
+}
+
+.buttons a:hover {
+  cursor: pointer;
+  transform: scale(1.05);
+}

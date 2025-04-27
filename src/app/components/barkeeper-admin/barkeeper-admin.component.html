@@ -1,0 +1,41 @@
+<div class="column">
+  <div class="content">
+    <p>{{bar?.name}}</p>
+
+    <ng-container *ngIf="bar">
+      <small><mat-icon>location_on</mat-icon>{{bar.address}}</small><br />
+      <small><mat-icon>schedule</mat-icon>Opening Hours
+        <mat-icon (click)="openEditBarHoursDialog('Opening')" class="clickable-icon">edit</mat-icon><br />
+        <span [innerHtml]="getHoursString(bar.openingHours)"></span>
+      </small><br />
+      <small><mat-icon>local_bar</mat-icon>Happy Hours
+        <mat-icon (click)="openEditBarHoursDialog('Happy')" class="clickable-icon">edit</mat-icon><br />
+        <span [innerHtml]="getHoursString(bar.happyHours)"></span>
+      </small><br />
+
+      <div class="qr-container">
+        <div class="qr-code">
+          <small>Check in Code</small>
+          <qrcode
+            [qrdata]="qrData"
+            [width]="150"
+            [errorCorrectionLevel]="'M'">
+          </qrcode>
+        </div>
+      </div>
+
+      <p>&nbsp;</p>
+      <p>Quests
+        <mat-icon (click)="openAddQuestDialog()" class="clickable-icon">add</mat-icon>
+      </p>
+      <small *ngIf="bar.quests.length == 0">No quests created.</small>
+
+      <p>&nbsp;</p>
+      <p><mat-icon>analytics</mat-icon>Stats</p>
+      <small><mat-icon>qr_code</mat-icon>{{statistics.checkins}} check in's</small><br />
+      <small><mat-icon>group</mat-icon>{{statistics.guests}} bar guests</small><br />
+      <small><mat-icon>local_bar</mat-icon>{{statistics.questFulfilled}} quests fulfilled</small><br />
+    </ng-container>
+  </div>
+  <app-toolbar></app-toolbar>
+</div>

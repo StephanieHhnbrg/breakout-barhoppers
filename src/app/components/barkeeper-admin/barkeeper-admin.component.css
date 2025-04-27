@@ -1,0 +1,39 @@
+.column {
+  flex-direction: column;
+  display: flex;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.content {
+  padding: 25px 10px 10px;
+  overflow-y: scroll;
+}
+
+.qr-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.qr-code {
+  padding: 15px;
+  background-color: black;
+  color: white;
+  text-align: center;
+  border-radius: 8px;
+}
+
+mat-icon {
+  transform: scale(0.8) translateY(8px);
+}
+
+.clickable-icon {
+  transform: scale(0.6) translateY(11px);
+}
+
+.clickable-icon:hover {
+  transform: scale(0.8) translateY(8px);
+  cursor: pointer
+}

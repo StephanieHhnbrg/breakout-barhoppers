@@ -1,0 +1,30 @@
+.column {
+  flex-direction: column;
+  display: flex;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.content {
+  padding: 25px 10px 10px;
+}
+
+.friend-item mat-icon {
+  transform: scale(0.8) translateY(7px);
+}
+
+.friend-item {
+  flex-direction: row;
+  display: flex;
+  justify-content: space-between;
+}
+
+.clickable-icon:hover {
+  cursor: pointer
+}
+
+.buttons button {
+  width: 100%;
+  margin: 5px;
+}
+

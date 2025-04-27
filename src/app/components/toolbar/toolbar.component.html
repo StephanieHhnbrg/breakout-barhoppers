@@ -1,0 +1,24 @@
+<mat-toolbar>
+  <ng-container *ngIf="isLoggedIn">
+    <button *ngIf="isBarkeeper()" mat-icon-button (click)="routeTo('/bar')">
+      <mat-icon>liquor</mat-icon>
+    </button>
+
+    <button mat-icon-button (click)="routeTo('/friends')">
+      <mat-icon>group</mat-icon>
+    </button>
+
+    <button mat-icon-button (click)="openQrCodeScanner()">
+      <mat-icon>photo_camera</mat-icon>
+    </button>
+
+    <button mat-icon-button (click)="routeTo('/map')">
+      <mat-icon>map</mat-icon>
+    </button>
+  </ng-container>
+
+  <ng-container *ngIf="isLoggedIn == false">
+    <!-- only relevant for map component -->
+    <app-g-login-button></app-g-login-button>
+  </ng-container>
+</mat-toolbar>

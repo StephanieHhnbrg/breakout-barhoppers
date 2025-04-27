@@ -1,0 +1,23 @@
+<div class="dialog">
+  <h2 mat-dialog-title><mat-icon>{{icon}}</mat-icon> {{data.kind}} Hours</h2>
+  <mat-dialog-content>
+    <ng-container *ngIf="bar">
+      <div class="row" *ngFor="let hour of hours">
+        <span class="day-text">{{getDayString(hour.day)}}&nbsp;</span>
+        <mat-form-field>
+          <mat-label>Start</mat-label>
+          <input matInput type="number" min="0" max="23" [(ngModel)]="hour.start">
+        </mat-form-field>
+        <span>&nbsp;&nbsp;-&nbsp;&nbsp;</span>
+        <mat-form-field>
+          <mat-label>End</mat-label>
+          <input matInput type="number" min="0" max="23" [(ngModel)]="hour.end">
+        </mat-form-field>
+      </div>
+    </ng-container>
+
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button mat-button (click)="updateHours()">Update</button>
+  </mat-dialog-actions>
+</div>

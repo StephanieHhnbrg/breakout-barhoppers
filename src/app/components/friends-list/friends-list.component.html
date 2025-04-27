@@ -1,0 +1,30 @@
+<div class="column">
+  <div class="content column">
+    <div class="friends-list">
+      <p>Friends</p>
+      <div class="friend-item" *ngFor="let friend of friends; index as i">
+        <span><mat-icon>account_circle</mat-icon> {{friend.name}}</span>
+        <div *ngIf="friend.status == 'pending'">
+          <mat-icon>schedule</mat-icon>
+        </div>
+        <div *ngIf="friend.status == 'requested'">
+          <mat-icon class="clickable-icon" (click)="acceptFriend(i,true)">check</mat-icon>
+          <mat-icon class="clickable-icon" (click)="acceptFriend(i,false)">close</mat-icon>
+        </div>
+      </div>
+      <small *ngIf="friends.length == 0">Your pub crawl squad is empty! <br /> Invite your friends to join the fun.</small>
+    </div>
+
+
+    <div class="buttons">
+      <button mat-raised-button (click)="shareInvitationLink()"><mat-icon>account_circle</mat-icon> Invite friend</button>
+      <button mat-raised-button (click)="openAddFriendByUsernameModal()"><mat-icon>person_add</mat-icon> Add by username</button>
+      <button mat-raised-button (click)="openQrCodeModal()"><mat-icon>qr_code_2</mat-icon> Scan code</button>
+    </div>
+
+  </div>
+
+
+
+  <app-toolbar></app-toolbar>
+</div>

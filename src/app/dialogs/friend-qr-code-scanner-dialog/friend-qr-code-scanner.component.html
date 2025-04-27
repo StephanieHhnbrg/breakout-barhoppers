@@ -1,0 +1,31 @@
+<div class="dialog">
+  <h2 mat-dialog-title>Grow your bar crew</h2>
+  <mat-dialog-content>
+    <mat-button-toggle-group [(ngModel)]="view" hideSingleSelectionIndicator=true>
+      <mat-button-toggle value="display" (click)="stopScanning()">My code</mat-button-toggle>
+      <mat-button-toggle value="scan" (click)="startScanning()">Scan code</mat-button-toggle>
+    </mat-button-toggle-group>
+
+    <ng-container *ngIf="view == 'display'">
+      <div class="qr-container">
+        <p>{{currentUser?.name}}</p>
+        <div class="qr-code">
+          <qrcode
+            [qrdata]="qrData"
+            [width]="150"
+            [errorCorrectionLevel]="'M'">
+          </qrcode>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="view == 'scan'">
+      <div class="scanner-container">
+        <div class="video-container">
+          <video #videoElement></video>
+          <div class="scan-region"></div>
+        </div>
+      </div>
+    </ng-container>
+  </mat-dialog-content>
+</div>

@@ -1,0 +1,13 @@
+<div class="map-container" #container>
+  <div class="map"
+       leaflet
+       [style.height]="container.offsetHeight"
+       [style.width]="container.offsetWidth"
+       [leafletOptions]="mapOptions"
+       [leafletCenter]="currentPos"
+       [leafletLayers]="layers"
+       [leafletZoom]="15">
+  </div>
+</div>
+
+<app-toolbar></app-toolbar>

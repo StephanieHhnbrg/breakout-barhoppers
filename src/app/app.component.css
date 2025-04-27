@@ -1,0 +1,35 @@
+.css-phone {
+  width: 300px;
+  height: 620px;
+  background: #000;
+  border-radius: 40px;
+  padding: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+  position: relative;
+  margin: 40px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 10px solid #333;
+}
+
+.phone-screen {
+  background: white;
+  border-radius: 30px;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.top-notch {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 20px;
+  background: #222;
+  border-radius: 10px;
+  z-index: 10;
+}

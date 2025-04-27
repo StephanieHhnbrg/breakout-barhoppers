@@ -1,0 +1,16 @@
+mat-icon {
+  transform: scale(0.9) translateY(4px);
+}
+
+.row {
+  display: flex;
+  align-items : center;
+}
+
+.day-text {
+  width: 35px;
+}
+
+mat-form-field {
+  max-width: 75px;
+}
