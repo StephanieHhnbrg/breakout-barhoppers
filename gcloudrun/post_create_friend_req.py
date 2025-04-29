@@ -3,7 +3,6 @@ from flask import Flask, request, jsonify, make_response
 from google.cloud import firestore
 
 
-app = Flask(__name__)
 @functions_framework.http
 def post_create_friend_req(request):
   if request.method == 'OPTIONS':
@@ -14,18 +13,16 @@ def post_create_friend_req(request):
 
 
 def create_friend_request(request):
-  recipient = request.json.get('recipient', {})
-  recipient_name = recipient.get('name')
-  recipient_mail = recipient.get('mail')
+  sender_name = request.json.get('senderName')
+  sender_mail = request.json.get('senderMail')
 
-  sender = request.json.get('sender', {})
-  sender_name = sender.get('name')
-  sender_mail = sender.get('mail')
+  recipient_name = request.json.get('recipientName')
+  recipient_mail = request.json.get('recipientMail')
 
   if not recipient_mail:
     user = find_user_by_name(recipient_name)
     if user:
-      recipient_mail = user["mail"]
+      recipient_mail = user["email"]
     else:
       raise ValueError("Recipient mail not provided and user not found by name")
 

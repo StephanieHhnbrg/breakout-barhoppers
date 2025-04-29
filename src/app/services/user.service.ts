@@ -35,10 +35,7 @@ export class UserService {
 
   public addFriend(newFriend: User): Subscription {
     let endpoint = environment.endpoints.postCreateFriendRequest;
-    let payload = {
-      sender: this.user,
-      recipient: newFriend,
-    }
+    let payload = {senderName: this.user!.name, senderMail: this.user!.mail, recipientName: newFriend.name, recipientMail: newFriend.mail};
 
     if (newFriend && ((newFriend.mail.length == 0 && !this.friends.find(f => f.name == newFriend.name)) || !this.friends.find(f => f.mail == newFriend.mail))) {
       return this.http.callGCloudRunPostRequest(endpoint, payload).subscribe(() => {
@@ -58,14 +55,14 @@ export class UserService {
     return this.http.callGCloudRunPostRequest(endpoint, payload);
   }
 
-  public acceptFriend(newFriend: User, accepted: boolean) {
+  public acceptFriend(newFriend: User, accepted: boolean): Subscription {
     let endpoint = environment.endpoints.postUpdateFriendRequest;
     let payload = {
       sender: newFriend,
       recipient: this.user,
       accepted: accepted,
     }
-    return this.http.callGCloudRunPostRequest(endpoint, payload);
+    return this.http.callGCloudRunPostRequest(endpoint, payload).subscribe(() => {});
   }
 
   public triggerFriendsOfUserRequest(): Subscription {

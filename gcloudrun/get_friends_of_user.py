@@ -3,7 +3,6 @@ from flask import Flask, request, jsonify, make_response
 from google.cloud import firestore
 
 
-app = Flask(__name__)
 @functions_framework.http
 def get_friends_of_user(request):
   if request.method == 'OPTIONS':
@@ -45,7 +44,7 @@ def get_accepted_friends_of_user(user):
   return result
 
 def get_friends_requests_of_user(user):
-  mail = user.get("mail")
+  mail = user.get("email")
   db = firestore.Client(database='barhoppers')
   sent_requests = db.collection('friend_requests') \
     .where('sender_mail', '==', mail) \

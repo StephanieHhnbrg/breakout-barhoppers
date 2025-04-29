@@ -1,9 +1,8 @@
 import functions_framework
-from flask import Flask, request, jsonify, make_response
+from flask import request, jsonify, make_response
 from google.cloud import firestore
 
 
-app = Flask(__name__)
 @functions_framework.http
 def post_accept_friend_req(request):
   if request.method == 'OPTIONS':
@@ -36,8 +35,8 @@ def delete_friend_request(request):
   db = firestore.Client(database="barhoppers")
 
   docs = db.collection('friend_requests') \
-    .where('sender_mail', '==', request.json.get('sender.mail')) \
-    .where('recipient_mail', '==', request.json.get('recipient.mail')) \
+    .where('sender_mail', '==', request.json.get('sender').get('mail')) \
+    .where('recipient_mail', '==', request.json.get('recipient').get('mail')) \
     .stream()
 
   for doc in docs:
