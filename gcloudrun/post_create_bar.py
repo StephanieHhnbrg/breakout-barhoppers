@@ -25,7 +25,8 @@ def create_bar(request):
     'lat': request.json.get('lat'),
     'lng': request.json.get('lng'),
     'openingHours': request.json.get('openingHours'),
-    'happyHours': request.json.get('happyHours')
+    'happyHours': request.json.get('happyHours'),
+    'status': 'registered'
   })
 
   return bar_id

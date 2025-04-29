@@ -31,7 +31,7 @@ export class BarkeeperAdminComponent implements OnInit, OnDestroy {
   public bar: Bar | undefined;
   public currentQuest: Quest | undefined;
   public qrData = '';
-  public statistics: BarStatistics = { id: "", checkins: 0, questFulfilled: 0 , guests: 0 };
+  public statistics: BarStatistics = { checkins: 0, questFulfilled: 0 , guests: 0 };
   private subscriptions: Subscription[] = [];
 
   constructor(private userService: UserService,
@@ -40,35 +40,13 @@ export class BarkeeperAdminComponent implements OnInit, OnDestroy {
 
   public ngOnInit() {
     let barId = this.userService.getCurrentUser()!.barId!;
-    this.subscriptions.push(this.barService.getBarById(barId).subscribe(bar => { this.bar = bar}));
+    this.subscriptions.push(this.barService.getBarById(barId).subscribe(bar => {
+      this.bar = bar;
+      this.initQrCode(this.bar);
+      this.initCurrentQuest();
+    }));
+
     this.subscriptions.push(this.barService.getBarStatistics(barId).subscribe(stats => { this.statistics = stats}));
-
-    this.bar = {
-      id: barId,
-      name: "Sonneneck",
-      address: "Elisabethstrasse 18, 44398 Dortmund",
-      lat: 0,
-      lng: 0,
-      openingHours: [
-        {day: 2, start: 18, end: 24},
-        {day: 3, start: 18, end: 24},
-        {day: 4, start: 18, end: 24},
-        {day: 5, start: 18, end: 24},
-        {day: 6, start: 18, end: 2},
-        {day: 7, start: 18, end: 2},
-      ],
-      happyHours: [
-        {day: 2, start: 18, end: 19},
-        {day: 3, start: 18, end: 20},
-        {day: 5, start: 18, end: 20},
-        {day: 6, start: 18, end: 20},
-        {day: 7, start: 19, end: 20},
-      ],
-      quests: [],
-    }
-
-    this.initCurrentQuest();
-    this.initQrCode(this.bar);
   }
 
   private initCurrentQuest() {

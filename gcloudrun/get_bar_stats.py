@@ -1,15 +1,14 @@
 import functions_framework
-from flask import Flask, request, jsonify, make_response
+from flask import request, jsonify, make_response
 from google.cloud import firestore
 
 
-app = Flask(__name__)
 @functions_framework.http
 def get_bar_stats(request):
   if request.method == 'OPTIONS':
     return handle_cors(request)
 
-  bar_id = request.args.get("barId")
+  bar_id = request.args.get("id")
   data = retrieve_bar_stats(bar_id)
   return create_response(request, data)
 

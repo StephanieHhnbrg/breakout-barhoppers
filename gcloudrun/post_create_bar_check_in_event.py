@@ -3,7 +3,6 @@ from flask import Flask, request, jsonify, make_response
 from google.cloud import firestore
 
 
-app = Flask(__name__)
 @functions_framework.http
 def post_create_bar_check_in_event(request):
   if request.method == 'OPTIONS':
@@ -11,7 +10,7 @@ def post_create_bar_check_in_event(request):
 
   create_event(request)
 
-  return create_response(request, { barId: bar_id })
+  return create_response(request, {})
 
 
 def create_event(request):
@@ -22,12 +21,6 @@ def create_event(request):
     'guest': request.json.get('user')
   })
 
-def add_bar_to_user(barkeeper_mail, bar_id):
-  db = firestore.Client(database='barhoppers')
-  doc_ref = db.collection('users').document(barkeeper_mail)
-  doc_ref.update({
-    'barId': bar_id,
-  })
 
 ALLOWED_ORIGINS = [
   'http://localhost:4200',

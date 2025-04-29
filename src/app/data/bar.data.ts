@@ -6,6 +6,7 @@ export interface Bar {
   address: string,
   lat: number,
   lng: number,
+  status: 'crawled' | 'registered',
 
   openingHours: {day: number, start: number, end: number}[],
   happyHours: {day: number, start: number, end: number}[],
