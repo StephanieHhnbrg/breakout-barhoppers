@@ -2,3 +2,10 @@ mat-toolbar {
   display: flex;
   justify-content: space-around;
 }
+
+@media only screen and (max-width: 420px) {
+  mat-toolbar {
+    position: absolute;
+    bottom: 0;
+  }
+}

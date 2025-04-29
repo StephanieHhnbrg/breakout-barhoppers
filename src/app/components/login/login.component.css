@@ -7,6 +7,12 @@
   vertical-align: middle;
 }
 
+@media only screen and (max-width: 420px) {
+  .content {
+    height: 100vh;
+  }
+}
+
 app-g-login-button {
   width: 100%;
 }

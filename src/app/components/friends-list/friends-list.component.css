@@ -2,11 +2,16 @@
   flex-direction: column;
   display: flex;
   justify-content: space-between;
-  height: 100%;
 }
 
 .content {
   padding: 25px 10px 10px;
+}
+
+@media only screen and (min-width: 420px) {
+  .column {
+    height: 100%;
+  }
 }
 
 .friend-item mat-icon {

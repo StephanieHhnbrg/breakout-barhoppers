@@ -58,11 +58,12 @@ export class FriendsListComponent implements OnInit, OnDestroy {
             .then(() => {})
             .catch(error => {
               console.error('Error sharing:', error);
-              this.snackbar.open("Invitation link copied! You can share it with your friends");
+              this.snackbar.open("Invitation link copied! You can share it with your friends", undefined,
+                { duration: 3000});
             });
         } else {
-          this.snackbar.open("Invitation link copied! You can share it with your friends");
-
+          this.snackbar.open("Invitation link copied! You can share it with your friends", undefined,
+            { duration: 3000});
         }
       })
       .catch(error => {
@@ -78,7 +79,7 @@ export class FriendsListComponent implements OnInit, OnDestroy {
 
   public openAddFriendByUsernameModal() {
     this.dialog.open(AddFriendByNameDialogComponent, {
-      autoFocus: false
+      autoFocus: true
     });
   }
 
@@ -92,7 +93,7 @@ export class FriendsListComponent implements OnInit, OnDestroy {
   }
 
   public acceptFriend(friendIndex: number, accepted: boolean) {
-    this.userService.acceptFriend(this.friends[friendIndex], accepted);
+    this.subscriptions.push(this.userService.acceptFriend(this.friends[friendIndex], accepted));
     if (accepted) {
       this.friends[friendIndex].status = '';
     } else {
