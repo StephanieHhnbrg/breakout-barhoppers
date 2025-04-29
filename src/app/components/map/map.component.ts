@@ -6,6 +6,7 @@ import {ToolbarComponent} from '../toolbar/toolbar.component';
 import {BarService} from '../../services/bar.service';
 import {Subscription} from 'rxjs';
 import {Bar} from '../../data/bar.data';
+import {getHoursString} from '../../utils/hours-formatting.utils';
 
 @Component({
   selector: 'app-map',
@@ -83,15 +84,20 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   private createBarMarker(bar: Bar): Marker {
+    let iconUrl = bar.status == 'crawled' ? 'assets/liquor_orange.png' : 'assets/liquor_purple.png';
     let result = marker(latLng(bar.lat, bar.lng), {
       icon: icon({
         iconSize: [25, 25],
         iconAnchor: [12, 12],
         tooltipAnchor: [20, 0],
-        iconUrl: 'assets/liquor_black.png',
+        iconUrl: iconUrl
       })
     });
-    result.bindTooltip(`<b>${bar.name}</b><br />`); // TODO: Opening Hour, Happy Hour, Quests
+    let tooltip = `<b>${bar.name}</b><br />`;
+    tooltip += `Opening Hours <br /> `+getHoursString(bar.openingHours)+'<br /> ';
+    tooltip += `Happy Hours <br />`+getHoursString(bar.happyHours);
+    // TODO: quests
+    result.bindTooltip(tooltip);
     return result;
   }
 
