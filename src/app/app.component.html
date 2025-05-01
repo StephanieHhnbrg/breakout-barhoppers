@@ -1,6 +1,6 @@
-<div class="css-phone">
-  <div class="top-notch"></div>
-  <div class="phone-screen">
+<div [ngClass]="{'phone': isBigScreen(), 'full-screen': !isBigScreen()}">
+  <div [ngClass]="{'top-notch': isBigScreen()}"></div>
+  <div [ngClass]="{'phone-screen': isBigScreen()}">
     <router-outlet></router-outlet>
   </div>
 </div>
