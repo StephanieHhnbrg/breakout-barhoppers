@@ -26,7 +26,16 @@ export class WelcomeComponent implements OnInit, OnDestroy {
 
   public ngOnInit() {
     this.subscriptions.push(this.walletService.getTokensUpdatedObservable().subscribe(t => {this.tokens = t}));
-    this.subscriptions.push(this.walletService.getNumberOfTokens().subscribe(t => {this.tokens = t}));
+    this.subscriptions.push(this.walletService.getWalletConnectedObservable().subscribe(connected => {
+      if (connected) {
+        this.walletService.fetchNFTsByOwner().then(nfts => {
+          console.log(nfts);
+        })
+        this.walletService.fetchTokenAccountsByOwner().then(tokens => {
+          console.log(tokens);
+        });
+      }
+    }));
   }
 
   public routeTo(url: string) {

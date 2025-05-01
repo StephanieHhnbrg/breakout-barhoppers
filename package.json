@@ -23,23 +23,30 @@
     "@angular/platform-browser-dynamic": "^18.0.0",
     "@angular/router": "^18.0.0",
     "@asymmetrik/ngx-leaflet": "^18.0.1",
+    "@metaplex-foundation/js": "^0.20.1",
+    "@solana/spl-token": "^0.4.13",
+    "@solana/web3.js": "^1.98.2",
     "@zxing/browser": "^0.1.5",
     "@zxing/library": "^0.21.3",
     "angular-oauth2-oidc": "^19.0.0",
     "angularx-qrcode": "^19.0.0",
     "angularx-social-login": "^4.1.0",
     "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.1",
     "install": "^0.13.0",
     "jsqr": "^1.4.0",
     "leaflet": "^1.9.4",
     "npm": "^11.3.0",
     "process": "^0.11.10",
     "rxjs": "~7.8.0",
+    "stream-browserify": "^3.0.0",
     "tslib": "^2.3.0",
     "util": "^0.12.5",
+    "vm-browserify": "^1.1.2",
     "zone.js": "~0.14.0"
   },
   "devDependencies": {
+    "@angular-builders/custom-webpack": "^18.0.0",
     "@angular-devkit/build-angular": "^18.0.0",
     "@angular/cli": "^18.0.0",
     "@angular/compiler-cli": "^18.0.0",
@@ -51,6 +58,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "node-polyfill-webpack-plugin": "^4.1.0",
     "typescript": "~5.4.0"
   }
 }

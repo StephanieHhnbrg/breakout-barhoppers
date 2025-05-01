@@ -58,7 +58,7 @@ export class BarQrCodeScannerDialogComponent  implements AfterViewInit, OnDestro
 
               // TODO: geolocation service verifying location!
               this.subscriptions.push(this.userService.checkInToBarQuest(bar, quest).subscribe(() => {}));
-              this.subscriptions.push(this.walletService.addTokens(hasQuestData ? 15: 10));
+              this.walletService.addTokens(hasQuestData ? 15: 10);
             }
             this.stopScanning();
             this.dialogRef.close();

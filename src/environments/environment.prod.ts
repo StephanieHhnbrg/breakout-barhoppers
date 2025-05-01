@@ -1,6 +1,7 @@
 export const environment = {
   production: true,
-  web3authClientId: "WEB3_AUTH_CLIENT_ID",
+  heliusApiKey: "HELIUS_API_KEY",
+  mintAddressB58: "MINT_ADDRESS",
   googleLoginProviderId: "GOOGLE_LOGIN_ID",
   endpoints: {
     getBarById: "https://get-bar-by-id-2xrgeo6rqq-ey.a.run.app",

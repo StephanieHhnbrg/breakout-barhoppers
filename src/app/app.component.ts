@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import {Component, OnDestroy} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import {AuthenticationService} from './services/authentication.service';
 
 @Component({
   selector: 'app-root',
@@ -8,4 +9,11 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent {}
+export class AppComponent implements OnDestroy {
+
+  constructor(private auth: AuthenticationService) {}
+
+  public ngOnDestroy() {
+    this.auth.logOut();
+  }
+}
