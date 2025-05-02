@@ -4,6 +4,7 @@ import {UserService} from './user.service';
 import {HttpsService} from './https.service';
 import {environment} from '../../environments/environment';
 import {WalletService} from './wallet.service';
+import {NftRuleService} from './nft-rule.service';
 declare const google: any;
 
 interface SignupResponse {
@@ -22,6 +23,7 @@ export class AuthenticationService {
   private loginStatusChanged$ = new Subject<boolean>();
   constructor(private userService: UserService,
             private walletService: WalletService,
+            private nftRuleService: NftRuleService,
             private http: HttpsService) { }
 
   public verifyGoogleToken(token: string): Subscription {
@@ -57,7 +59,9 @@ export class AuthenticationService {
           localStorage.setItem('userId', response.mail);
           localStorage.setItem('walletAddress', response.walletAddress);
           localStorage.setItem('token', response.accessToken);
-          this.userService.setUser({mail: response.mail, name: response.name, barId: response.barId});
+          let user = {mail: response.mail, name: response.name, barId: response.barId};
+          this.userService.setUser(user);
+          this.nftRuleService.fetchUserStats(user);
           this.walletService.connectWallet(response.walletAddress);
           this.loginStatusChanged$.next(true);
         },

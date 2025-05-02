@@ -34,6 +34,8 @@ This project is the main contribution to the [Breakout Challenge of Jägermeiste
 | POST   | post_update_friend_req         | `{ sender: {mail: string}, recipient: {mail: string}, accepted: boolean}`          | -            |
 |        |                                |                                                                                    |
 | POST   | post_create_bar_check_in_event | `{ bar: string, quest: string, user: string}` - corresponding ids/mail             | -            |
+| GET    | get_user_stats                 | mail             | -            | 
+
 
 
 ### 🔥 Firestore Collections

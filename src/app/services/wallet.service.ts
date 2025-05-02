@@ -4,16 +4,17 @@ import {
   Connection,
   PublicKey,
   clusterApiUrl,
-  Keypair,
+  Keypair, Transaction,
 } from '@solana/web3.js';
 import {
-  createMint,
+  createAssociatedTokenAccountInstruction,
+  createMint, getAssociatedTokenAddress,
   getOrCreateAssociatedTokenAccount,
   mintTo,
 } from '@solana/spl-token';
-import {Metaplex} from '@metaplex-foundation/js';
+import {Metaplex,keypairIdentity } from '@metaplex-foundation/js';
 import {environment} from '../../environments/environment';
-
+import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 
 @Injectable({
@@ -40,11 +41,15 @@ export class WalletService {
 
   public async connectWallet(walletAddress: string) {
     this.publicKey = new PublicKey(walletAddress);
-    this.metaplex = Metaplex.make(this.connection);
+    this.metaplex = Metaplex.make(this.connection)
+      .use(keypairIdentity(this.payer));
+
     this.walletConnected$.next(true);
 
     try {
       this.chargeUpPayerAccount();
+      this.initAccount();
+
     } catch (e) {
       console.error("Charging payer account without success: ", e);
     }
@@ -53,7 +58,7 @@ export class WalletService {
   public async chargeUpPayerAccount() {
     let airdropSignature = await this.connection.requestAirdrop(
     this.payer.publicKey,
-    2e9
+    1e9
       );
 
     let latestBlockHash = await this.connection.getLatestBlockhash();
@@ -63,7 +68,36 @@ export class WalletService {
     });
 
     let balance = await this.connection.getBalance(this.payer.publicKey);
-    console.log(`Balance: ${balance} SOL`);
+    console.log(`Balance: ${balance / LAMPORTS_PER_SOL} SOL`);
+  }
+
+  private async initAccount() {
+    const associatedTokenAddress = await getAssociatedTokenAddress(
+      this.mintAddress,
+      this.publicKey!,
+      false
+    );
+
+    const accountInfo = await this.connection.getAccountInfo(associatedTokenAddress);
+    if (accountInfo === null) {
+
+
+      const transaction = new Transaction().add(
+        createAssociatedTokenAccountInstruction(
+          this.payer.publicKey,
+          associatedTokenAddress,
+          this.publicKey!,
+          this.mintAddress
+        ));
+
+      const signature = await this.connection.sendTransaction(transaction, [this.payer], {
+        skipPreflight: false,
+        preflightCommitment: 'confirmed',
+      });
+
+      await this.connection.confirmTransaction(signature, 'confirmed');
+
+    }
   }
 
   public disconnectWallet() {
@@ -110,7 +144,7 @@ export class WalletService {
   }
 
   public async createFriendsNft() {
-    this.createNFT("Social Butterflyr", this.NFT_URL + "nft_friends.png");
+    this.createNFT("Social Butterflyrw", this.NFT_URL + "nft_friends.png");
   }
 
 
@@ -121,12 +155,13 @@ export class WalletService {
       name,
       uri,
       sellerFeeBasisPoints: 500,
+      tokenOwner: this.publicKey
     });
 
     return nft.address;
   }
 
-  public async setMintAdddress(){
+  public async setMintAddress(){
     this.mintAddress = await createMint(
       this.connection,
       this.payer,
@@ -161,6 +196,9 @@ export class WalletService {
 
     this.numberOfTokens += amount;
     this.tokensUpdated$.next(this.numberOfTokens);
+
+    let balance = await this.connection.getBalance(this.payer.publicKey);
+    console.log(`Balance: ${balance / LAMPORTS_PER_SOL} SOL`);
   }
 
 }

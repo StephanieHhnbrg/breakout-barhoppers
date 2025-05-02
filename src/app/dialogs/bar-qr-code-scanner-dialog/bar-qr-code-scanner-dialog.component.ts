@@ -8,6 +8,8 @@ import {FormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {QRCodeComponent} from 'angularx-qrcode';
 import {WalletService} from '../../services/wallet.service';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {NftRuleService} from '../../services/nft-rule.service';
 
 @Component({
   selector: 'app-bar-qr-code-scanner-dialog',
@@ -31,7 +33,9 @@ export class BarQrCodeScannerDialogComponent  implements AfterViewInit, OnDestro
 
   constructor(public dialogRef: MatDialogRef<BarQrCodeScannerDialogComponent>,
               private userService: UserService,
-              private walletService: WalletService) {
+              private nftRuleService: NftRuleService,
+              private walletService: WalletService,
+              public snackbar: MatSnackBar) {
   }
 
   ngAfterViewInit() {
@@ -52,11 +56,26 @@ export class BarQrCodeScannerDialogComponent  implements AfterViewInit, OnDestro
               let friend = {name: data.username, mail: data.mail};
               this.subscriptions.push(this.userService.addFriend(friend));
             } else if (data.type === 'bar-checkin') {
-              let bar = {name: data.barName, id: data.barId };
-              let hasQuestData = Object.hasOwn(data, 'questName') && Object.hasOwn(data, 'questId');
-              let quest = hasQuestData ? {name: data.questName, id: data.questId } : undefined;
-
               // TODO: geolocation service verifying location!
+
+              let bar = {name: data.barName, id: data.barId };
+              if (this.nftRuleService.isEligibleForBarNft()) {
+                this.walletService.createBarNft();
+                this.snackbar.open("Congrats! You earned the Pub Pioneer NFT!", undefined,
+                  { duration: 3000});
+              }
+
+              let hasQuestData = Object.hasOwn(data, 'questName') && Object.hasOwn(data, 'questId');
+              let quest = undefined;
+              if (hasQuestData) {
+                quest = {name: data.questName, id: data.questId};
+                if (this.nftRuleService.isEligibleForQuestNft()) {
+                  this.walletService.createQuestNft();
+                  this.snackbar.open("Congrats! You earned the Quest Explorer NFT!", undefined,
+                    { duration: 3000});
+                }
+              }
+
               this.subscriptions.push(this.userService.checkInToBarQuest(bar, quest).subscribe(() => {}));
               this.walletService.addTokens(hasQuestData ? 15: 10);
             }

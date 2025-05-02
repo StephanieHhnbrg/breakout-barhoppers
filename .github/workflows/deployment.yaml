@@ -34,8 +34,7 @@ jobs:
           rm -r ./docs
           npm run build-prod
 
-          cp -r "./dist/breakout-barhoppers/browser/" "./docs"
-          cp "./dist/breakout-barhoppers/3rdpartylicenses.txt" "./docs"
+          cp -r "./dist/breakout-barhoppers/" "./docs"
           cp "./docs/index.html" "./docs/404.html"
 
       - name: 🎉 Commit & Push

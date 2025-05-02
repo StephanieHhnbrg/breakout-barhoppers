@@ -12,6 +12,8 @@ import {MatDialog} from '@angular/material/dialog';
 import {
   AddFriendByNameDialogComponent
 } from '../../dialogs/add-friend-by-name-dialog/add-friend-by-name-dialog.component';
+import {NftRuleService} from '../../services/nft-rule.service';
+import {WalletService} from '../../services/wallet.service';
 
 @Component({
   selector: 'app-friends-list',
@@ -33,8 +35,11 @@ export class FriendsListComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
   constructor(private userService: UserService,
+              private nftRuleService: NftRuleService,
+              private walletService: WalletService,
               private dialog: MatDialog,
-              public snackbar: MatSnackBar) {}
+              public snackbar: MatSnackBar) {
+  }
   public ngOnInit() {
     this.subscriptions.push(this.userService.getFriendsOfUserObservable().subscribe(
         friends => { this.friends = friends; }));
@@ -96,6 +101,11 @@ export class FriendsListComponent implements OnInit, OnDestroy {
     this.subscriptions.push(this.userService.acceptFriend(this.friends[friendIndex], accepted));
     if (accepted) {
       this.friends[friendIndex].status = '';
+      if (this.nftRuleService.isEligibleForFriendsNft()) {
+        this.walletService.createFriendsNft();
+        this.snackbar.open("Congrats! You earned the Social Butterfly NFT!", undefined,
+          { duration: 3000});
+      }
     } else {
       this.friends.splice(friendIndex, 1);
     }
