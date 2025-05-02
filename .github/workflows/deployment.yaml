@@ -28,6 +28,8 @@ jobs:
       - name: 🔒 Update environment variable with gh secrets
         run: |
           sed -i "s/GOOGLE_LOGIN_ID/${{ secrets.GOOGLE_LOGIN_PROVIDER }}/g" ./src/environments/environment.prod.ts
+          sed -i "s/MINT_ADDRESS/${{ secrets.MINT_ADDRESS }}/g" ./src/environments/environment.prod.ts
+          sed -i "s/HELIUS_API_KEY/${{ secrets.HELIUS_API_KEY }}/g" ./src/environments/environment.prod.ts
 
       - name: 🚧 Build project for production
         run: |
