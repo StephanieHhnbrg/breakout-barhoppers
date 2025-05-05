@@ -4,17 +4,18 @@ import {
   Connection,
   PublicKey,
   clusterApiUrl,
-  Keypair, Transaction,
+  Keypair, Transaction, sendAndConfirmTransaction, Signer,
 } from '@solana/web3.js';
 import {
   createAssociatedTokenAccountInstruction,
-  createMint, getAssociatedTokenAddress,
+  createMint, createTransferInstruction, getAssociatedTokenAddress,
   getOrCreateAssociatedTokenAccount,
   mintTo,
 } from '@solana/spl-token';
 import {Metaplex,keypairIdentity } from '@metaplex-foundation/js';
 import {environment} from '../../environments/environment';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
+import {DecryptionService} from './decryption.service';
 
 
 @Injectable({
@@ -23,7 +24,8 @@ import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 export class WalletService {
   private connection: Connection;
   private publicKey: PublicKey | null = null;
-  private payer = Keypair.generate();
+  private signer: Signer | null = null;
+  private payer: Keypair = Keypair.generate();
 
   private metaplex: Metaplex | null = null;
   private mintAddress = new PublicKey(environment.mintAddressB58);
@@ -34,13 +36,16 @@ export class WalletService {
   private readonly TOKEN_PROGRAM_ID = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA';
   private readonly NFT_URL = "https://raw.githubusercontent.com/StephanieHhnbrg/breakout-barhoppers/refs/heads/main/src/assets/";
 
-  constructor() {
+  constructor(private decryptionService: DecryptionService) {
     this.connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
     // this.connection = new Connection(`https://devnet.helius-rpc.com/?api-key=${environment.heliusApiKey}`, 'confirmed');
   }
 
-  public async connectWallet(walletAddress: string) {
+  public async connectWallet(walletAddress: string, privateKey: string) {
     this.publicKey = new PublicKey(walletAddress);
+    this.signer = await this.createSignerFromDecryptedKey(privateKey);
+    this.payer = this.decryptionService.getKeyPairFromSecretKey(environment.payerSecretKey);
+
     this.metaplex = Metaplex.make(this.connection)
       .use(keypairIdentity(this.payer));
 
@@ -53,6 +58,23 @@ export class WalletService {
     } catch (e) {
       console.error("Charging payer account without success: ", e);
     }
+
+  }
+
+  private async createSignerFromDecryptedKey(privateKey: string): Promise<Signer> {
+    let decryptedHexKey = await this.decryptionService.decryptPrivateKey(privateKey);
+    if (decryptedHexKey) {
+      const byteArray = Uint8Array.from(
+        decryptedHexKey.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16))
+      );
+
+      return Keypair.fromSecretKey(byteArray);
+    }
+    return new Keypair();
+  }
+
+  public getWalletAddress(): string {
+    return this.publicKey ? this.publicKey.toBase58() : '';
   }
 
   public async chargeUpPayerAccount() {
@@ -96,7 +118,6 @@ export class WalletService {
       });
 
       await this.connection.confirmTransaction(signature, 'confirmed');
-
     }
   }
 
@@ -114,7 +135,7 @@ export class WalletService {
     return this.walletConnected$.asObservable();
   }
 
-  async fetchNFTsByOwner(): Promise<any[]> {
+  public async fetchNFTsByOwner(): Promise<any[]> {
     if (!this.metaplex || !this.publicKey) {
       throw new Error('Wallet not connected');
     }
@@ -122,7 +143,7 @@ export class WalletService {
     return await this.metaplex!.nfts().findAllByOwner({ owner: this.publicKey! });
   }
 
-  async fetchTokenAccountsByOwner(): Promise<any> {
+  public async fetchTokenAccountsByOwner(): Promise<any> {
     if (!this.publicKey) {
       return [];
     }
@@ -132,19 +153,20 @@ export class WalletService {
     });
     console.log("tokens: ");
     console.log(tokens.value);
+    // TODO: update this.numberOfTokens
     return tokens.value;
   }
 
   public async createQuestNft() {
-    this.createNFT("Quest Explorer", this.NFT_URL + "nft_quests.png");
+    await this.createNFT("Quest Explorer", this.NFT_URL + "nft_quests.png");
   }
 
   public async createBarNft() {
-    this.createNFT("Pub Pioneer", this.NFT_URL + "nft_bars.png");
+    await this.createNFT("Pub Pioneer", this.NFT_URL + "nft_bars.png");
   }
 
   public async createFriendsNft() {
-    this.createNFT("Social Butterflyrw", this.NFT_URL + "nft_friends.png");
+    await this.createNFT("Social Butterfly", this.NFT_URL + "nft_friends.png");
   }
 
 
@@ -199,6 +221,32 @@ export class WalletService {
 
     let balance = await this.connection.getBalance(this.payer.publicKey);
     console.log(`Balance: ${balance / LAMPORTS_PER_SOL} SOL`);
+  }
+
+  public async transferTokens(toWallet: PublicKey, amount: number = 50) {
+    const fromTokenAccount = await getAssociatedTokenAddress(
+      this.mintAddress,
+      this.publicKey!
+    );
+
+    const toTokenAccount = await getAssociatedTokenAddress(
+      this.mintAddress,
+      toWallet,
+    );
+
+    const tx = new Transaction().add(
+      createTransferInstruction(
+        fromTokenAccount,
+        toTokenAccount,
+        this.publicKey!,
+        amount
+      )
+    );
+
+    await sendAndConfirmTransaction(this.connection, tx, [this.signer!]);
+
+    this.numberOfTokens -= amount;
+    this.tokensUpdated$.next(this.numberOfTokens);
   }
 
 }

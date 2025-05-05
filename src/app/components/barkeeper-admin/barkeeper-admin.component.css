@@ -10,6 +10,14 @@
   overflow-y: scroll;
 }
 
+.redeem {
+  color: rgba(131, 58, 180, 1);
+}
+
+.redeem:hover{
+  cursor: pointer;
+}
+
 .qr-container {
   display: flex;
   flex-direction: column;

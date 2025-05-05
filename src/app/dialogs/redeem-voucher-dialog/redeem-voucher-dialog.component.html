@@ -1,0 +1,16 @@
+<div class="dialog">
+  <h2 mat-dialog-title>Redeem vouchers</h2>
+  <mat-dialog-content>
+    <p class="description">Let guests scan this QR code to exchange their tokens for a drink at happy hour discount.</p>
+    <div class="qr-container">
+      <div class="qr-code">
+        <qrcode
+          [qrdata]="qrData"
+          [width]="150"
+          [errorCorrectionLevel]="'M'">
+        </qrcode>
+      </div>
+    </div>
+
+  </mat-dialog-content>
+</div>

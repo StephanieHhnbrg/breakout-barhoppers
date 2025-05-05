@@ -13,6 +13,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {EditBarHoursDialogComponent} from '../../dialogs/edit-bar-hours-dialog/edit-bar-hours-dialog.component';
 import {AddQuestDialogComponent} from '../../dialogs/add-quest-dialog/add-quest-dialog.component';
 import {getHoursString} from '../../utils/hours-formatting.utils';
+import {RedeemVoucherDialogComponent} from '../../dialogs/redeem-voucher-dialog/redeem-voucher-dialog.component';
 
 @Component({
   selector: 'app-barkeeper-admin',
@@ -89,6 +90,12 @@ export class BarkeeperAdminComponent implements OnInit, OnDestroy {
   public openAddQuestDialog() {
     this.dialog.open(AddQuestDialogComponent, {
       data: this.bar,
+      autoFocus: false
+    });
+  }
+
+  public openRedeemVoucherDialog() {
+    this.dialog.open(RedeemVoucherDialogComponent, {
       autoFocus: false
     });
   }

@@ -7,6 +7,28 @@
         {{tokens}}
     </span>
     </div>
+
+    <p>&nbsp;</p>
+    <div class="voucher-frame">
+      <div class="voucher">
+        <small *ngIf="tokens<VOUCHER_TOKENS">You have no vouchers yet. Explore more bars and fulfill some quests to gain happy hour vouchers.</small>
+        <div *ngIf="tokens>=VOUCHER_TOKENS">
+          <p><mat-icon>local_bar</mat-icon> Happy Hour Voucher</p>
+          <small>Redeem {{VOUCHER_TOKENS}} tokens to unlock Happy Hour discounts. Just go to the bar!</small>
+        </div>
+      </div>
+    </div>
+    <p>&nbsp;</p>
+
+    <div class="nft-display">
+      <small>Your NFTs</small>
+      <div class="nfts">
+        <ng-container *ngFor="let nft of nfts">
+          <img [src]="nft.url" />
+        </ng-container>
+      </div>
+    </div>
+
   </div>
 
   <app-toolbar></app-toolbar>

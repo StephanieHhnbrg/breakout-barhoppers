@@ -4,11 +4,13 @@ import {MatIconModule} from '@angular/material/icon';
 import {Subscription} from 'rxjs';
 import {Router} from '@angular/router';
 import {WalletService} from '../../services/wallet.service';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'app-welcome',
   standalone: true,
   imports: [
+    CommonModule,
     MatIconModule,
     ToolbarComponent
   ],
@@ -18,6 +20,13 @@ import {WalletService} from '../../services/wallet.service';
 export class WelcomeComponent implements OnInit, OnDestroy {
 
   public tokens: number = 0;
+
+  public readonly VOUCHER_TOKENS = 50;
+  public nfts = [
+    { url: 'https://raw.githubusercontent.com/StephanieHhnbrg/breakout-barhoppers/refs/heads/main/src/assets/nft_bars.png'},
+    { url: 'https://raw.githubusercontent.com/StephanieHhnbrg/breakout-barhoppers/refs/heads/main/src/assets/nft_friends.png'},
+    { url: 'https://raw.githubusercontent.com/StephanieHhnbrg/breakout-barhoppers/refs/heads/main/src/assets/nft_quests.png'},
+  ]
   private subscriptions: Subscription[] = [];
 
 
@@ -29,11 +38,9 @@ export class WelcomeComponent implements OnInit, OnDestroy {
     this.subscriptions.push(this.walletService.getWalletConnectedObservable().subscribe(connected => {
       if (connected) {
         this.walletService.fetchNFTsByOwner().then(nfts => {
-          console.log(nfts);
+          console.log(nfts); // TODO:
         })
-        this.walletService.fetchTokenAccountsByOwner().then(tokens => {
-          console.log(tokens);
-        });
+        this.walletService.fetchTokenAccountsByOwner();
       }
     }));
   }

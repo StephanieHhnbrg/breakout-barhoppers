@@ -13,6 +13,7 @@ interface SignupResponse {
   barId: string;
   accessToken: string;
   walletAddress: string;
+  encryptedPrivateKey: string;
 }
 
 @Injectable({
@@ -62,7 +63,7 @@ export class AuthenticationService {
           let user = {mail: response.mail, name: response.name, barId: response.barId};
           this.userService.setUser(user);
           this.nftRuleService.fetchUserStats(user);
-          this.walletService.connectWallet(response.walletAddress);
+          this.walletService.connectWallet(response.walletAddress, response.encryptedPrivateKey);
           this.loginStatusChanged$.next(true);
         },
         error: (error) => {

@@ -15,10 +15,8 @@ export class AppComponent implements OnDestroy {
   constructor(private auth: AuthenticationService) {}
 
   public isBigScreen() {
-    if (typeof window === 'undefined') {
-      return false;
-    }
-    return window.innerWidth >= 420;
+    var ua = navigator.userAgent;
+    return !/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(ua);
   }
 
   public ngOnDestroy() {

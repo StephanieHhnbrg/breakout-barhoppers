@@ -1,23 +1,20 @@
 import functions_framework
-from flask import Flask, request, jsonify, make_response
+from flask import request, jsonify, make_response
 from google.oauth2 import id_token
 import requests as http_requests
 from google.auth.transport import requests as google_requests
 import os
-from cryptography.fernet import Fernet
 from solana.keypair import Keypair
 import base64
 import binascii
 from google.cloud import firestore
-
-
-app = Flask(__name__)
+import hashlib
+from Crypto.Cipher import AES
+from Crypto.Random import get_random_bytes
 
 CLIENT_ID = os.environ["GOOGLE_CLIENT_ID"]
 CLIENT_SECRET = os.environ["GOOGLE_CLIENT_SECRET"]
-ENCRYPTION_KEY = os.environ.get('ENCRYPTION_KEY', Fernet.generate_key()).decode() if isinstance(
-  os.environ.get('ENCRYPTION_KEY', Fernet.generate_key()), bytes) else os.environ.get('ENCRYPTION_KEY', Fernet.generate_key())
-cipher_suite = Fernet(ENCRYPTION_KEY.encode() if isinstance(ENCRYPTION_KEY, str) else ENCRYPTION_KEY)
+PASSPHRASE = os.environ["WALLET_CRYPTO_PASSPHRASE"]
 
 
 
@@ -41,6 +38,7 @@ def authenticate_google(request):
       user = create_user({
         "email": email,
         "name": idinfo.get('name'),
+        "picture": idinfo.get('picture')
       })
 
       print(user)
@@ -54,10 +52,11 @@ def authenticate_google(request):
       "name": user["name"],
       "barId": user["barId"],
       "walletAddress": wallet["publicKey"],
+      "encryptedPrivateKey": wallet["encryptedPrivateKey"],
       "accessToken": generate_token(user)
     }
 
-    print("data")
+    print(data)
     return create_response(request, data)
 
   except ValueError:
@@ -113,6 +112,7 @@ def create_user(user_data):
   db.collection('users').document(email).set({
     "id": user_id,
     "name": user_data["name"],
+    "picture": user_data["picture"],
     "barId": "",
     "friends": [],
     "email": email,
@@ -127,20 +127,26 @@ def create_wallet_for_user(user_id):
   keypair = Keypair()
   public_key = str(keypair.public_key)
 
-  private_key_bytes = keypair.secret_key
+  private_key_bytes = keypair.secret_key  # 64 bytes
   private_key_hex = binascii.hexlify(private_key_bytes).decode('utf-8')
-  encrypted_private_key = cipher_suite.encrypt(private_key_hex.encode())
+  key = hashlib.sha256(PASSPHRASE.encode()).digest()  # 32-byte AES key
+
+  nonce = get_random_bytes(12)
+  cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
+  ciphertext, tag = cipher.encrypt_and_digest(private_key_hex.encode())
+  encrypted_data = nonce + ciphertext + tag
+  decoded_key = base64.b64encode(encrypted_data).decode('utf-8')
 
   db = firestore.Client(database='barhoppers')
   db.collection('wallets').document(user_id).set({
     "userId": user_id,
     "publicKey": public_key,
-    "encryptedPrivateKey": encrypted_private_key.decode(),
+    "encryptedPrivateKey": decoded_key,
     "createdAt": firestore.SERVER_TIMESTAMP
   })
 
   print("WALLET CREATED")
-  return {"publicKey": public_key, "userId": user_id}
+  return {"publicKey": public_key, "encryptedPrivateKey": decoded_key, "userId": user_id}
 
 def get_user_wallet(user_id):
   db = firestore.Client(database='barhoppers')

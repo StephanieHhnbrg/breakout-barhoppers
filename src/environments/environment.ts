@@ -2,6 +2,8 @@ export const environment = {
   production: false,
   heliusApiKey: "HELIUS_API_KEY",
   mintAddressB58: "MINT_ADDRESS",
+  walletCryptoPassphrase: "WALLET_CRYPTO_PASSPHRASE",
+  payerSecretKey: "PAYER_SECRET_KEY",
   googleLoginProviderId: "GOOGLE_LOGIN_ID",
   endpoints: {
     getBarById: "https://get-bar-by-id-2xrgeo6rqq-ey.a.run.app",

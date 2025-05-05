@@ -10,6 +10,7 @@ import {QRCodeComponent} from 'angularx-qrcode';
 import {WalletService} from '../../services/wallet.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {NftRuleService} from '../../services/nft-rule.service';
+import {PublicKey} from '@solana/web3.js';
 
 @Component({
   selector: 'app-bar-qr-code-scanner-dialog',
@@ -78,6 +79,16 @@ export class BarQrCodeScannerDialogComponent  implements AfterViewInit, OnDestro
 
               this.subscriptions.push(this.userService.checkInToBarQuest(bar, quest).subscribe(() => {}));
               this.walletService.addTokens(hasQuestData ? 15: 10);
+            } else if (data.type == 'voucher-redemption') {
+              try {
+                let barWallet = new PublicKey(data.barWallet);
+                this.walletService.transferTokens(barWallet);
+                // TODO: track in firestore somehow?
+                this.snackbar.open("Redemption successful. Enjoy your drink!", undefined, { duration: 10000 });
+              } catch (error) {
+                this.snackbar.open("Oops! Something did not work. Try again.", undefined, { duration: 10000 });
+                console.error(error);
+              }
             }
             this.stopScanning();
             this.dialogRef.close();

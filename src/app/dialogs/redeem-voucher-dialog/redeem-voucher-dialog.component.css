@@ -1,0 +1,16 @@
+.description {
+  max-width: 200px;
+}
+
+.qr-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.qr-code {
+  padding: 15px;
+  background-color: white;
+  border-radius: 8px;
+}

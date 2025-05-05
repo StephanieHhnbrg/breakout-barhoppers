@@ -12,6 +12,7 @@
         <mat-icon (click)="openEditBarHoursDialog('Happy')" class="clickable-icon">edit</mat-icon><br />
         <span [innerHtml]="getHoursString(bar.happyHours)"></span>
       </small><br />
+      <small><a class="redeem" (click)="openRedeemVoucherDialog()"><mat-icon>qr_code</mat-icon>Redeem guests vouchers</a></small><br />
 
       <div class="qr-container">
         <div class="qr-code">

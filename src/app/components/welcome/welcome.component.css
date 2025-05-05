@@ -1,7 +1,7 @@
 .column {
   flex-direction: column;
   display: flex;
-  justify-content: space-between;
+  justify-content: start;
   height: 100%;
 }
 
@@ -32,8 +32,37 @@ mat-icon {
   transform: scale(0.8) translateY(8px);
 }
 
-.content {
-  padding: 25px 10px 10px;
+.voucher-frame {
+  max-width: 95vw;
+  background: linear-gradient(90deg, rgba(131, 58, 180, 1) 0%, rgba(253, 29, 29, 1) 50%, rgba(252, 176, 69, 1) 100%);
+  padding: 3px;
+  border-radius: 25px;
 }
 
+.voucher {
+  background: white;
+  border-radius: 25px;
+  padding: 15px;
+}
+
+
+.content {
+  padding: 25px 10px 10px;
+  height: 100%;
+  overflow-y: scroll;
+}
+
+.nfts {
+  flex-direction: row;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+img {
+  width: 125px;
+  height: 125px;
+  border-radius: 25px;
+  padding: 5px;
+}
 
