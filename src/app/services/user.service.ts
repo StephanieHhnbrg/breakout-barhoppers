@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpsService} from './https.service';
-import {Observable, Subject, Subscription} from 'rxjs';
+import {BehaviorSubject, Observable, Subject, Subscription} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {Friend, User} from '../data/user.data';
 
@@ -13,7 +13,7 @@ export class UserService {
   private friends: Friend[] = [];
 
   private newFriendRequest$ = new Subject<Friend>();
-  private getFriendsOfUser$ = new Subject<Friend[]>();
+  private getFriendsOfUser$ = new BehaviorSubject<Friend[]>([]);
 
   constructor(private http: HttpsService) { }
 
@@ -53,6 +53,14 @@ export class UserService {
     let endpoint = environment.endpoints.postCreateBarCheckInEvent;
     let payload = { user: this.user!.mail, bar: bar.id, quest : quest ? quest!.id : "" }
     return this.http.callGCloudRunPostRequest(endpoint, payload);
+  }
+
+  public getFriendsLocations(): Observable<{name: string, picture: string, lat: number, lng: number}[]> {
+    if (this.user) {
+      let endpoint = `${environment.endpoints.getFriendsLocations}?user=${this.user!.mail}`;
+      return this.http.callGCloudRunGetRequest(endpoint);
+    }
+    return new Observable();
   }
 
   public acceptFriend(newFriend: User, accepted: boolean): Subscription {

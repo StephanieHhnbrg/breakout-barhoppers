@@ -9,6 +9,7 @@ export const environment = {
     getBarById: "https://get-bar-by-id-2xrgeo6rqq-ey.a.run.app",
     getBarStatistics: "https://get-bar-stats-2xrgeo6rqq-ey.a.run.app",
     getBarsByLocation: "https://get-bars-by-loc-2xrgeo6rqq-ey.a.run.app",
+    getFriendsLocations: "https://get-friends-locations-2xrgeo6rqq-ey.a.run.app",
     getFriendsOfUser: "https://get-friends-of-user-2xrgeo6rqq-ey.a.run.app",
     getUser: "https://get-user-2xrgeo6rqq-ey.a.run.app",
     getUserStats: "https://get-user-stats-2xrgeo6rqq-ey.a.run.app",

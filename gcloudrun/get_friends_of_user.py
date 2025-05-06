@@ -38,6 +38,7 @@ def get_accepted_friends_of_user(user):
     data = {
       "mail": friend_mail,
       "name": friend.get("name"),
+      "picture": friend.get("picture"),
       "status": ""
     }
     result.append(data)

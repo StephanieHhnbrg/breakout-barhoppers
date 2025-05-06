@@ -151,10 +151,12 @@ export class WalletService {
     const tokens = await this.connection.getParsedTokenAccountsByOwner(this.publicKey, {
       programId: new PublicKey(this.TOKEN_PROGRAM_ID),
     });
-    console.log("tokens: ");
-    console.log(tokens.value);
-    // TODO: update this.numberOfTokens
-    return tokens.value;
+    if (tokens.value && tokens.value.length > 0) {
+      this.numberOfTokens = tokens.value[0].account.data.parsed.info.tokenAmount.uiAmount || 0;
+      this.tokensUpdated$.next(this.numberOfTokens);
+    }
+
+    return this.numberOfTokens;
   }
 
   public async createQuestNft() {

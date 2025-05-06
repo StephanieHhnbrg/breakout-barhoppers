@@ -6,5 +6,6 @@ export interface User {
 }
 
 export interface Friend extends User {
-  status: "pending" | "requested" | ""
+  status: "pending" | "requested" | "",
+  picture?: string,
 }

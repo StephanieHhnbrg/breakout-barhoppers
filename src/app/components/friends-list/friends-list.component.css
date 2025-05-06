@@ -18,6 +18,13 @@
   transform: scale(0.8) translateY(7px);
 }
 
+.friend-item img {
+  width: 25px;
+  height: 25px;
+  border-radius: 25px;
+  transform: translateY(5px);
+}
+
 .friend-item {
   flex-direction: row;
   display: flex;

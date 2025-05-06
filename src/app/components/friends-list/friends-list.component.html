@@ -3,7 +3,11 @@
     <div class="friends-list">
       <p>Friends</p>
       <div class="friend-item" *ngFor="let friend of friends; index as i">
-        <span><mat-icon>account_circle</mat-icon> {{friend.name}}</span>
+        <span>
+          <mat-icon *ngIf="friend.status != ''">account_circle</mat-icon>
+          <img *ngIf="friend.status == ''" [src]="friend.picture"/>
+          {{friend.name}}
+        </span>
         <div *ngIf="friend.status == 'pending'">
           <mat-icon>schedule</mat-icon>
         </div>

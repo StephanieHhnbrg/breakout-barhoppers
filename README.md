@@ -19,22 +19,23 @@ This project is the main contribution to the [Breakout Challenge of Jägermeiste
 
 
 ### 🏃‍Google CloudRun Endpoint
-| Method | Endpoint                       | Params/Body                                                                        | PDescription |
-|--------|--------------------------------|------------------------------------------------------------------------------------|--------------|
-| GET    | get_bar_by_id                  | id                                                                                 | -            |
-| POST   | post_create_bar                | `Bar`                                                                              | -            |
-| POST   | post_update_bar                | `Bar`                                                                              | -            |
-| GET    | get_bar_stats                  | id                                                                                 | -            |
-| GET    | get_bars_by_loc                | lat, lng                                                                           | -            |
-|        |                                |                                                                                    |              |
-| POST   | post_sign_up                   | token/code                                                                         | -            |
-|        |                                |                                                                                    |
-| GET    | get_friends_of_user            | mail                                                                               | -            |
-| POST   | post_create_friend_req         | `{ sender: {name: string, mail: string}, recipient: {name: string, mail: string}}` | -            |
-| POST   | post_update_friend_req         | `{ sender: {mail: string}, recipient: {mail: string}, accepted: boolean}`          | -            |
-|        |                                |                                                                                    |
-| POST   | post_create_bar_check_in_event | `{ bar: string, quest: string, user: string}` - corresponding ids/mail             | -            |
-| GET    | get_user_stats                 | mail             | -            | 
+| Method | Endpoint                       | Params/Body                                                                                | Description |
+|--------|--------------------------------|--------------------------------------------------------------------------------------------|-------------|
+| GET    | get_bar_by_id                  | id                                                                                         | -           |
+| POST   | post_create_bar                | `Bar`                                                                                      | -           |
+| POST   | post_update_bar                | `Bar`                                                                                      | -           |
+| GET    | get_bar_stats                  | id                                                                                         | -           |
+| GET    | get_bars_by_loc                | lat, lng                                                                                   | -           |
+|        |                                |                                                                                            |             |
+| POST   | post_sign_up                   | token/code                                                                                 | -           |
+|        |                                |                                                                                            |
+| GET    | get_friends_of_user            | mail                                                                                       | -           |
+| GET    | get_friends_locations          | mail                                                                                       | -           |
+| POST   | post_create_friend_req         | `{ senderName: string, senderMail: string, recipientName: string, recipientMail: string }` | -           |
+| POST   | post_update_friend_req         | `{ sender: {mail: string}, recipient: {mail: string}, accepted: boolean}`                  | -           |
+|        |                                |                                                                                            |
+| POST   | post_create_bar_check_in_event | `{ bar: string, quest: string, user: string}` - corresponding ids/mail                     | -           |
+| GET    | get_user_stats                 | mail                                                                                       | -           | 
 
 
 

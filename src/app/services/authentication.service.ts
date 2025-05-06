@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {Observable, Subject, Subscription} from 'rxjs';
+import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import {UserService} from './user.service';
 import {HttpsService} from './https.service';
 import {environment} from '../../environments/environment';
@@ -21,7 +21,7 @@ interface SignupResponse {
 })
 export class AuthenticationService {
 
-  private loginStatusChanged$ = new Subject<boolean>();
+  private loginStatusChanged$ = new BehaviorSubject<boolean>(false);
   constructor(private userService: UserService,
             private walletService: WalletService,
             private nftRuleService: NftRuleService,

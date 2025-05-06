@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {latLng, LatLng, MapOptions, tileLayer} from "leaflet";
+import {DivIcon, divIcon, latLng, LatLng, MapOptions, tileLayer} from "leaflet";
 import {icon, Marker, marker, circleMarker, CircleMarker} from "leaflet";
 import {LeafletModule} from '@asymmetrik/ngx-leaflet';
 import {ToolbarComponent} from '../toolbar/toolbar.component';
@@ -7,6 +7,8 @@ import {BarService} from '../../services/bar.service';
 import {Subscription} from 'rxjs';
 import {Bar} from '../../data/bar.data';
 import {getHoursString} from '../../utils/hours-formatting.utils';
+import {UserService} from '../../services/user.service';
+import {AuthenticationService} from '../../services/authentication.service';
 
 @Component({
   selector: 'app-map',
@@ -29,7 +31,9 @@ export class MapComponent implements OnInit, OnDestroy {
   public currentPos: LatLng = latLng(51.51494000, 7.4660000); // Dortmund, Germany
 
   private subscriptions: Subscription[] = [];
-  constructor(private barService: BarService) {}
+  constructor(private barService: BarService,
+              private auth: AuthenticationService,
+              private userService: UserService) {}
   ngOnInit() {
     this.requestUsersPosition();
   }
@@ -64,6 +68,17 @@ export class MapComponent implements OnInit, OnDestroy {
         this.barService.getBarsByLoc(this.currentPos.lat, this.currentPos.lng).subscribe(bars => {
           bars.forEach(b => this.layers.push(this.createBarMarker(b)));
       }));
+
+      this.subscriptions.push(
+          this.auth.getLoginStatusObservable().subscribe(isLoggedIn => {
+          if (isLoggedIn) {
+            this.subscriptions.push(
+              this.userService.getFriendsLocations().subscribe(friends => {
+                friends.forEach(f => this.layers.push(this.createAvatarMarker(f.picture, f.lat, f.lng, f.name)));
+              }));
+          }
+      }));
+
     }
 
     this.isLayerInitLoading = false;
@@ -100,6 +115,31 @@ export class MapComponent implements OnInit, OnDestroy {
     result.bindTooltip(tooltip);
     return result;
   }
+
+  private createAvatarMarker(url: string, lat: number, lng: number, tooltip: string): Marker {
+    const html = `<div style="
+      width: 20px;
+      height: 20px;
+      background-image: url('${url}');
+      background-size: cover;
+      border: 1px solid black;
+      border-radius: 50%;
+    "></div>`;
+
+    let avatarIcon: DivIcon = divIcon({
+      html,
+      className: '',
+      iconSize: [40, 40],
+      iconAnchor: [20, 20],
+      tooltipAnchor: [20, 0]
+    });
+    let offset = 0.0001; // TODO: improve offset, for several friends at one bar
+    let result = marker(latLng(lat + offset, lng + offset), { icon: avatarIcon });
+    result.bindTooltip(tooltip);
+    return result;
+  }
+
+
 
   public ngOnDestroy() {
     this.subscriptions.forEach(s => s.unsubscribe());

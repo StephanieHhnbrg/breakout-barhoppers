@@ -1,5 +1,5 @@
 import functions_framework
-from flask import Flask, request, jsonify, make_response
+from flask import request, jsonify, make_response
 from google.cloud import firestore
 
 
@@ -18,7 +18,8 @@ def create_event(request):
   db.collection('events').add({
     'bar': request.json.get('bar'),
     'quest': request.json.get('quest'),
-    'guest': request.json.get('user')
+    'guest': request.json.get('user'),
+    'createdAt': firestore.SERVER_TIMESTAMP
   })
 
 
