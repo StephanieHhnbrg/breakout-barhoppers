@@ -1,10 +1,9 @@
-import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
-import {Subscription} from 'rxjs';
 import {Bar} from '../../data/bar.data';
 import {getDayString} from '../../utils/hours-formatting.utils';
 import {FormsModule} from '@angular/forms';
@@ -24,12 +23,11 @@ import {BarService} from '../../services/bar.service';
   templateUrl: './edit-bar-hours-dialog.component.html',
   styleUrl: './edit-bar-hours-dialog.component.css'
 })
-export class EditBarHoursDialogComponent implements OnInit, OnDestroy {
+export class EditBarHoursDialogComponent implements OnInit {
 
   public bar: Bar | undefined;
   public hours: {day: number, start: number, end: number}[] = [];
   public icon: "schedule" | "local_bar" = "schedule";
-  private subscriptions: Subscription[] = [];
 
   constructor(public dialogRef: MatDialogRef<EditBarHoursDialogComponent>,
               private barService: BarService,
@@ -73,13 +71,10 @@ export class EditBarHoursDialogComponent implements OnInit, OnDestroy {
       this.data.bar.happyHours = result;
     }
 
-    this.subscriptions.push(this.barService.updateBarHours(this.bar!));
+    this.barService.updateBarHours(this.bar!);
 
     this.dialogRef.close();
   }
 
-  public ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
-  }
 
 }

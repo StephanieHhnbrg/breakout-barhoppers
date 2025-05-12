@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpsService} from './https.service';
 import {environment} from '../../environments/environment';
-import {Observable, Subject, Subscription} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {Bar} from '../data/bar.data';
 import {BarStatistics} from '../data/bar-statistics.data';
 import {Quest} from '../data/quest.data';
@@ -29,15 +29,15 @@ export class BarService {
     return this.http.callGCloudRunGetRequest(endpoint);
   }
 
-  public updateBarHours(bar: Bar): Subscription {
+  public updateBarHours(bar: Bar) {
     let endpoint = environment.endpoints.postUpdateBar;
-    return this.http.callGCloudRunPostRequest(endpoint, bar).subscribe(() => {});
+    this.http.callGCloudRunPostRequest(endpoint, bar);
   }
 
-  public addQuest(quest: Quest): Subscription {
+  public addQuest(quest: Quest) {
     this.newQuestAdded$.next(quest);
-    let endpoint = environment.endpoints.postUpdateBar;
-    return this.http.callGCloudRunPostRequest(endpoint, quest).subscribe(() => {});
+    let endpoint = environment.endpoints.postCreateQuest;
+    this.http.callGCloudRunPostRequest(endpoint, quest);
   }
 
   public getQuestAddedObservable(): Observable<Quest> {

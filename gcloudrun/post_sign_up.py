@@ -33,8 +33,10 @@ def authenticate_google(request):
       return jsonify({"error": "Email not found in token"}), 400
 
     user = find_user_by_email(email)
+    first_sign_in = False
 
     if not user:
+      first_sign_in = True
       user = create_user({
         "email": email,
         "name": idinfo.get('name'),
@@ -53,7 +55,8 @@ def authenticate_google(request):
       "barId": user["barId"],
       "walletAddress": wallet["publicKey"],
       "encryptedPrivateKey": wallet["encryptedPrivateKey"],
-      "accessToken": generate_token(user)
+      "accessToken": generate_token(user),
+      "firstSignIn": first_sign_in
     }
 
     print(data)

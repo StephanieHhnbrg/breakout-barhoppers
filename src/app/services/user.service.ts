@@ -33,26 +33,24 @@ export class UserService {
     return (this.user == undefined) ? false : (this.user!.barId != undefined && this.user!.barId!.length > 0);
   }
 
-  public addFriend(newFriend: User): Subscription {
+  public addFriend(newFriend: User) {
     let endpoint = environment.endpoints.postCreateFriendRequest;
     let payload = {senderName: this.user!.name, senderMail: this.user!.mail, recipientName: newFriend.name, recipientMail: newFriend.mail};
 
     if (newFriend && ((newFriend.mail.length == 0 && !this.friends.find(f => f.name == newFriend.name)) || !this.friends.find(f => f.mail == newFriend.mail))) {
-      return this.http.callGCloudRunPostRequest(endpoint, payload).subscribe(() => {
-        this.newFriendRequest$.next({name: newFriend.name, mail: newFriend.mail, status: "pending"});
-      });
+      this.http.callGCloudRunPostRequest(endpoint, payload);
+      this.newFriendRequest$.next({name: newFriend.name, mail: newFriend.mail, status: "pending"});
     }
-    return new Subscription();
   }
 
   public getFriendRequestObservable(): Observable<Friend> {
     return this.newFriendRequest$.asObservable();
   }
 
-  public checkInToBarQuest(bar: {id: string, name: string }, quest?: {id: string, name: string }): Observable<string> {
+  public checkInToBarQuest(bar: {id: string, name: string }, quest?: {id: string, name: string }) {
     let endpoint = environment.endpoints.postCreateBarCheckInEvent;
     let payload = { user: this.user!.mail, bar: bar.id, quest : quest ? quest!.id : "" }
-    return this.http.callGCloudRunPostRequest(endpoint, payload);
+    this.http.callGCloudRunPostRequest(endpoint, payload);
   }
 
   public getFriendsLocations(): Observable<{name: string, picture: string, lat: number, lng: number}[]> {
@@ -63,14 +61,14 @@ export class UserService {
     return new Observable();
   }
 
-  public acceptFriend(newFriend: User, accepted: boolean): Subscription {
+  public acceptFriend(newFriend: User, accepted: boolean) {
     let endpoint = environment.endpoints.postUpdateFriendRequest;
     let payload = {
       sender: newFriend,
       recipient: this.user,
       accepted: accepted,
     }
-    return this.http.callGCloudRunPostRequest(endpoint, payload).subscribe(() => {});
+    this.http.callGCloudRunPostRequest(endpoint, payload);
   }
 
   public triggerFriendsOfUserRequest(): Subscription {

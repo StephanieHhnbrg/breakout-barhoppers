@@ -19,12 +19,17 @@ ALLOWED_ORIGINS = [
 ]
 
 
+def get_allowed_origin(request):
+  origin = request.headers.get('Origin', '')
+  if origin in ALLOWED_ORIGINS:
+    return origin
+  return ALLOWED_ORIGINS[0]
+
+
 def handle_cors(request):
   response = make_response()
   response.status_code = 204
-  origin = request.headers.get('Origin')
-  if origin in ALLOWED_ORIGINS:
-    response.headers['Access-Control-Allow-Origin'] = origin
+  response.headers['Access-Control-Allow-Origin'] = get_allowed_origin(request)
   response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
   response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
   return response
@@ -33,8 +38,6 @@ def handle_cors(request):
 def create_response(request, data):
   response = make_response(jsonify(data))
   response.status_code = 200
-  origin = request.headers.get('Origin')
-  if origin in ALLOWED_ORIGINS:
-    response.headers['Access-Control-Allow-Origin'] = origin
+  response.headers['Access-Control-Allow-Origin'] = get_allowed_origin(request)
   return response
 

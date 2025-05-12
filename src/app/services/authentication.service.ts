@@ -5,16 +5,8 @@ import {HttpsService} from './https.service';
 import {environment} from '../../environments/environment';
 import {WalletService} from './wallet.service';
 import {NftRuleService} from './nft-rule.service';
+import {SignupResponse} from '../data/signup-response.data';
 declare const google: any;
-
-interface SignupResponse {
-  name: string;
-  mail: string;
-  barId: string;
-  accessToken: string;
-  walletAddress: string;
-  encryptedPrivateKey: string;
-}
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +21,7 @@ export class AuthenticationService {
 
   public verifyGoogleToken(token: string): Subscription {
     let endpoint = environment.endpoints.postSignUp;
-    let obs = this.http.callGCloudRunPostRequest(endpoint, { token });
+    let obs = this.http.callGCloudRunPostRequestSignupResponse(endpoint, { token });
     return this.handleSuccessfulLogin(obs);
   }
 
@@ -50,7 +42,7 @@ export class AuthenticationService {
 
   private exchangeAuthCodeForTokens(code: string) {
     let endpoint = environment.endpoints.postSignUp;
-    let obs = this.http.callGCloudRunPostRequest(endpoint, { code });
+    let obs = this.http.callGCloudRunPostRequestSignupResponse(endpoint, { code });
     this.handleSuccessfulLogin(obs);
   }
 
@@ -63,7 +55,7 @@ export class AuthenticationService {
           let user = {mail: response.mail, name: response.name, barId: response.barId};
           this.userService.setUser(user);
           this.nftRuleService.fetchUserStats(user);
-          this.walletService.connectWallet(response.walletAddress, response.encryptedPrivateKey);
+          this.walletService.connectWallet(response.walletAddress, response.encryptedPrivateKey, response.firstSignIn);
           this.loginStatusChanged$.next(true);
         },
         error: (error) => {

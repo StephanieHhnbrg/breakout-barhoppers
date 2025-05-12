@@ -1,6 +1,5 @@
 import {AfterViewInit, Component, ElementRef, OnDestroy, ViewChild} from '@angular/core';
 import {BrowserMultiFormatReader} from '@zxing/library';
-import {Subscription} from 'rxjs';
 import {MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {UserService} from '../../services/user.service';
 import {CommonModule} from '@angular/common';
@@ -30,7 +29,6 @@ export class BarQrCodeScannerDialogComponent  implements AfterViewInit, OnDestro
   @ViewChild('videoElement') videoElement!: ElementRef;
   private codeReader = new BrowserMultiFormatReader();
   private isScanning = false;
-  private subscriptions: Subscription[] = [];
 
   constructor(public dialogRef: MatDialogRef<BarQrCodeScannerDialogComponent>,
               private userService: UserService,
@@ -55,14 +53,14 @@ export class BarQrCodeScannerDialogComponent  implements AfterViewInit, OnDestro
             const data = JSON.parse(result.getText());
             if (data.type === 'friend-request') {
               let friend = {name: data.username, mail: data.mail};
-              this.subscriptions.push(this.userService.addFriend(friend));
+              this.userService.addFriend(friend);
             } else if (data.type === 'bar-checkin') {
               // TODO: geolocation service verifying location!
 
               let bar = {name: data.barName, id: data.barId };
               if (this.nftRuleService.isEligibleForBarNft()) {
                 this.walletService.createBarNft();
-                this.snackbar.open("Congrats! You earned the Pub Pioneer NFT!", undefined,
+                this.snackbar.open("Congrats! You earned the Pub Pioneer NFT!", '🎉',
                   { duration: 3000});
               }
 
@@ -72,21 +70,24 @@ export class BarQrCodeScannerDialogComponent  implements AfterViewInit, OnDestro
                 quest = {name: data.questName, id: data.questId};
                 if (this.nftRuleService.isEligibleForQuestNft()) {
                   this.walletService.createQuestNft();
-                  this.snackbar.open("Congrats! You earned the Quest Explorer NFT!", undefined,
+                  this.snackbar.open("Congrats! You earned the Quest Explorer NFT!", '🎊',
                     { duration: 3000});
                 }
               }
 
-              this.subscriptions.push(this.userService.checkInToBarQuest(bar, quest).subscribe(() => {}));
-              this.walletService.addTokens(hasQuestData ? 15: 10);
+              this.userService.checkInToBarQuest(bar, quest);
+              let earnedTokens = hasQuestData ? 15: 10;
+              this.walletService.addTokens(earnedTokens);
+              this.snackbar.open(`Congrats! You earned ${earnedTokens} tokens!`, '💎',
+                { duration: 3000});
             } else if (data.type == 'voucher-redemption') {
               try {
                 let barWallet = new PublicKey(data.barWallet);
                 this.walletService.transferTokens(barWallet);
                 // TODO: track in firestore somehow?
-                this.snackbar.open("Redemption successful. Enjoy your drink!", undefined, { duration: 10000 });
+                this.snackbar.open("Redemption successful. Enjoy your drink!", '🍹', { duration: 10000 });
               } catch (error) {
-                this.snackbar.open("Oops! Something did not work. Try again.", undefined, { duration: 10000 });
+                this.snackbar.open("Oops! Something did not work. Try again.", '☠️', { duration: 10000 });
                 console.error(error);
               }
             }
@@ -109,6 +110,5 @@ export class BarQrCodeScannerDialogComponent  implements AfterViewInit, OnDestro
 
   ngOnDestroy() {
     this.stopScanning();
-    this.subscriptions.forEach(s => s.unsubscribe());
   }
 }

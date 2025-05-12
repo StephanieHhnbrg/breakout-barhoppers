@@ -2,7 +2,7 @@
   <div class="content">
     <div class="row">
       <span>Hello Barhopper!</span>
-      <span class="chip" (click)="routeTo('/rewards')">
+      <span class="chip" (click)="routeTo('/god')">
       <mat-icon>diamond</mat-icon>
         {{tokens}}
     </span>
@@ -21,10 +21,11 @@
     <p>&nbsp;</p>
 
     <div class="nft-display">
-      <small>Your NFTs</small>
+      <small>Your NFTs</small><br />
+      <small>Discover bars, fulfill quests and make new friends to earn minted NFTs.</small>
       <div class="nfts">
         <ng-container *ngFor="let nft of nfts">
-          <img [src]="nft.url" />
+          <img [src]="nft.uri" />
         </ng-container>
       </div>
     </div>

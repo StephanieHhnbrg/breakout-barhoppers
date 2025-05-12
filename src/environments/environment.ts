@@ -5,6 +5,7 @@ export const environment = {
   walletCryptoPassphrase: "WALLET_CRYPTO_PASSPHRASE",
   payerSecretKey: "PAYER_SECRET_KEY",
   googleLoginProviderId: "GOOGLE_LOGIN_ID",
+  isGodModeEnabled: false,
   endpoints: {
     getBarById: "https://get-bar-by-id-2xrgeo6rqq-ey.a.run.app",
     getBarStatistics: "https://get-bar-stats-2xrgeo6rqq-ey.a.run.app",
@@ -15,8 +16,8 @@ export const environment = {
     getUserStats: "https://get-user-stats-2xrgeo6rqq-ey.a.run.app",
     postCreateBar: "https://post-create-bar-2xrgeo6rqq-ey.a.run.app",
     postCreateBarCheckInEvent: "https://post-create-bar-check-in-event-2xrgeo6rqq-ey.a.run.app",
-    postCreateFriendRequest: "https://post-create-friend-req-2xrgeo6rqq-ey.a.run.app",
-    postCreateQuest: "https://post-create-quest-xxxxxx-ey.a.run.app",
+    postCreateFriendRequest: "https://post-create-friend-request-2xrgeo6rqq-pv.a.run.app",
+    postCreateQuest: "https://post-create-quest-2xrgeo6rqq-pv.a.run.app",
     postSignUp: "https://sign-up-2xrgeo6rqq-ey.a.run.app",
     postUpdateBar: "https://post-update-bar-2xrgeo6rqq-ey.a.run.app",
     postUpdateFriendRequest: "https://post-accept-friend-req-2xrgeo6rqq-ey.a.run.app"

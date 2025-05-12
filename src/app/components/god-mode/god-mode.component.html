@@ -1,0 +1,31 @@
+<div class="column">
+  <div class="content">
+    <div>
+      <p>God Mode</p>
+      <small>isWalletConnected: {{isWalletConnected}}</small><br />
+      <small>Payer Account Balance: {{balance}} SOL</small>
+    </div>
+
+    <div>
+      <p>User's Tokens <span class="chip"><mat-icon>diamond</mat-icon>{{tokens}}</span></p>
+      <button mat-stroked-button (click)="addTokens()">Add 10 tokens</button>
+    </div>
+
+    <p>&nbsp;</p>
+
+    <div>
+      <p>User's NFTs ({{nfts.length}})</p>
+      <p *ngFor="let n of nfts">* {{n.name}}</p>
+      <p>&nbsp;</p>
+      <div class="nfts">
+        <button mat-stroked-button (click)="mintBarNFT()">Mint Pub Pioneer NFT </button>
+        <button mat-stroked-button (click)="mintFriendNFT()">Mint Social Butterfly NFT</button>
+        <button mat-stroked-button (click)="mintQuestNFT()">Mint Quest Explorer NFT</button>
+
+      </div>
+    </div>
+
+  </div>
+
+  <app-toolbar></app-toolbar>
+</div>

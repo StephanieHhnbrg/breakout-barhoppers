@@ -98,12 +98,12 @@ export class FriendsListComponent implements OnInit, OnDestroy {
   }
 
   public acceptFriend(friendIndex: number, accepted: boolean) {
-    this.subscriptions.push(this.userService.acceptFriend(this.friends[friendIndex], accepted));
+    this.userService.acceptFriend(this.friends[friendIndex], accepted);
     if (accepted) {
       this.friends[friendIndex].status = '';
       if (this.nftRuleService.isEligibleForFriendsNft()) {
         this.walletService.createFriendsNft();
-        this.snackbar.open("Congrats! You earned the Social Butterfly NFT!", undefined,
+        this.snackbar.open("Congrats! You earned the Social Butterfly NFT!", '🦋',
           { duration: 3000});
       }
     } else {
@@ -111,6 +111,7 @@ export class FriendsListComponent implements OnInit, OnDestroy {
     }
 
   }
+
   public ngOnDestroy() {
     this.subscriptions.forEach(s => s.unsubscribe());
   }

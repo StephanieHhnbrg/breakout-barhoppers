@@ -22,11 +22,7 @@ export class WelcomeComponent implements OnInit, OnDestroy {
   public tokens: number = 0;
 
   public readonly VOUCHER_TOKENS = 50;
-  public nfts = [
-    { url: 'https://raw.githubusercontent.com/StephanieHhnbrg/breakout-barhoppers/refs/heads/main/src/assets/nft_bars.png'},
-    { url: 'https://raw.githubusercontent.com/StephanieHhnbrg/breakout-barhoppers/refs/heads/main/src/assets/nft_friends.png'},
-    { url: 'https://raw.githubusercontent.com/StephanieHhnbrg/breakout-barhoppers/refs/heads/main/src/assets/nft_quests.png'},
-  ]
+  public nfts: {name: string, uri: string}[] = []
   private subscriptions: Subscription[] = [];
 
 
@@ -34,11 +30,12 @@ export class WelcomeComponent implements OnInit, OnDestroy {
               private walletService: WalletService) {}
 
   public ngOnInit() {
-    this.subscriptions.push(this.walletService.getTokensUpdatedObservable().subscribe(t => {this.tokens = t}));
+    this.subscriptions.push(this.walletService.getTokensUpdatedObservable().subscribe(t => { this.tokens = t; }));
+    this.subscriptions.push(this.walletService.getNftAddedObservable().subscribe(nft => { this.nfts.push(nft); }));
     this.subscriptions.push(this.walletService.getWalletConnectedObservable().subscribe(connected => {
       if (connected) {
         this.walletService.fetchNFTsByOwner().then(nfts => {
-          console.log(nfts); // TODO:
+          this.nfts = nfts;
         })
         this.walletService.fetchTokenAccountsByOwner();
       }

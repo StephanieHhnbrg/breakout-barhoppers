@@ -1,4 +1,4 @@
-import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {Bar} from '../../data/bar.data';
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {CommonModule} from '@angular/common';
@@ -7,7 +7,6 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {Quest} from '../../data/quest.data';
 import {BarService} from '../../services/bar.service';
-import {Subscription} from 'rxjs';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators, FormControl} from '@angular/forms';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
@@ -37,9 +36,10 @@ import { v4 as uuidv4 } from 'uuid';
   templateUrl: './add-quest-dialog.component.html',
   styleUrl: './add-quest-dialog.component.css'
 })
-export class AddQuestDialogComponent implements OnInit, OnDestroy {
+export class AddQuestDialogComponent implements OnInit {
 
   public bar: Bar | undefined;
+  public quest: Quest | undefined;
   public form: FormGroup;
   readonly singleDateForm = new FormControl(new Date());
   public multipleDates: Date[] = [];
@@ -47,17 +47,17 @@ export class AddQuestDialogComponent implements OnInit, OnDestroy {
   readonly startTimeForm = new FormControl();
   readonly endTimeForm = new FormControl();
 
-  public view: "single" | "multiple" | "regular" = "single";
+  public dateView: "single" | "multiple" | "regular" = "single";
 
+  public state: "view" | "create" | "edit" = "create";
   public timeOptions: {value: number, text: string}[] = [];
   public weekDayOptions: {value: number, text: string}[] = [];
 
-  private subscriptions: Subscription[] = [];
   constructor(public dialogRef: MatDialogRef<AddQuestDialogComponent>,
               private barService: BarService,
               private fb: FormBuilder,
 
-              @Inject(MAT_DIALOG_DATA) public data: { bar: Bar }) {
+              @Inject(MAT_DIALOG_DATA) public data: { bar: Bar, quest: Quest }) {
   this.form = this.fb.group({
     name: ['', Validators.required],
     description: ['', Validators.required]
@@ -66,18 +66,44 @@ export class AddQuestDialogComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.bar = this.data.bar;
+    if (this.data.quest) {
+      this.state = "view";
+      this.quest = this.data.quest;
+    }
+
     this.timeOptions = this.getTimeOptions();
     this.weekDayOptions = this.getWeekdayOptions();
   }
 
+  public changeToEditView() {
+    if (this.quest) {
+      this.state = "edit";
+      this.form = this.fb.group({
+        name: [this.quest.name, Validators.required],
+        description: [this.quest.description, Validators.required]
+      });
+      this.dateView = (this.quest.regularDays && this.quest.regularDays.length > 0) ? 'regular' :
+        ((this.quest.dates && this.quest.dates.length == 1) ? 'single' : 'multiple');
+      if (this.dateView == 'single') {
+        this.singleDateForm.setValue(this.multipleDates![0]);
+      } else if (this.dateView == 'multiple') {
+        this.multipleDates = this.quest.dates!;
+      }    if (this.dateView == 'regular') {
+        this.regularDateForm.setValue(this.quest.regularDays!);
+      }
+      this.startTimeForm.setValue(this.quest.startHour);
+      this.endTimeForm.setValue(this.quest.endHour);
+    }
+  }
+
   public onSubmit() {
     if (this.isValidForm()) {
-      let id = `quest_${uuidv4()}`;
+      let id = this.quest ? this.quest.id : `quest_${uuidv4()}`;
       let barId = this.bar!.id;
       let name: string = this.form.get('name')!.value;
       let description: string = this.form.get('description')!.value;
-      let regularDays: number[] = this.view == 'regular' ? this.regularDateForm.value : [];
-      let dates: Date[] = this.view != 'regular' ? (this.view == 'single' ? [this.singleDateForm.value!] : this.multipleDates): [];
+      let regularDays: number[] = this.dateView == 'regular' ? this.regularDateForm.value : [];
+      let dates: Date[] = this.dateView != 'regular' ? (this.dateView == 'single' ? [this.singleDateForm.value!] : this.multipleDates): [];
       let startHour: number = this.startTimeForm.value;
       let endHour: number = this.endTimeForm.value;
       let quest: Quest = { id, barId, name, description, regularDays, dates, startHour, endHour};
@@ -88,9 +114,9 @@ export class AddQuestDialogComponent implements OnInit, OnDestroy {
   }
 
   public isValidForm(): boolean {
-    let hasDatesSelected = (this.view == 'single' && this.singleDateForm.value)
-      || (this.view == 'multiple' && this.multipleDates.length > 0)
-      || (this.view == 'regular' && this.regularDateForm.value);
+    let hasDatesSelected = (this.dateView == 'single' && this.singleDateForm.value)
+      || (this.dateView == 'multiple' && this.multipleDates.length > 0)
+      || (this.dateView == 'regular' && this.regularDateForm.value);
     let hasTimeSelected = this.startTimeForm.value && this.endTimeForm.value;
     return this.form.valid && hasDatesSelected && hasTimeSelected;
   }
@@ -103,6 +129,14 @@ export class AddQuestDialogComponent implements OnInit, OnDestroy {
 
   public getDateString(date: Date): string {
     return `${date.getMonth()+1}/${date.getDate()}/${date.getFullYear()}`;
+  }
+
+  public getRegularDaysString(days: number[]) : string {
+    return days.map(d => { return getDayString(d); })
+      .reduce((prev, next) => {
+      return `${prev}, ${next}`
+    });
+
   }
 
   public removeDate(index: number) {
@@ -137,35 +171,35 @@ export class AddQuestDialogComponent implements OnInit, OnDestroy {
         hours.push(h);
       }
     }
-    const formatHour = (h: number): string => {
-      const suffix = h >= 12 ? 'PM' : 'AM';
-      const hour12 = h % 12 === 0 ? 12 : h % 12;
-      return `${hour12} ${suffix}`;
-    };
 
     return hours.map(h => ({
       value: h,
-      text: formatHour(h)
+      text: this.formatHour(h)
     }));
   }
+
+  public formatHour(h: number): string {
+    const suffix = h >= 12 ? 'PM' : 'AM';
+    const hour12 = h % 12 === 0 ? 12 : h % 12;
+    return `${hour12} ${suffix}`;
+  };
 
   private getWeekdayOptions(): {value: number, text: string}[]  {
     if (!this.bar) {
       return [];
     }
-
     return this.bar!.openingHours.map(h => {
       return {value: h.day, text: getDayString(h.day) };
     });
   }
 
   private addQuest(quest: Quest) {
-    this.subscriptions.push(this.barService.addQuest(quest));
+    this.barService.addQuest(quest);
     this.dialogRef.close();
   }
 
-  ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
+  public onClose() {
+    this.dialogRef.close();
   }
 
 }

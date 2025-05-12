@@ -44,11 +44,19 @@ export class BarkeeperAdminComponent implements OnInit, OnDestroy {
   public ngOnInit() {
     let barId = this.userService.getCurrentUser()!.barId!;
     this.subscriptions.push(this.barService.getBarById(barId).subscribe(bar => {
-      this.bar = bar;
+      let quests = bar.quests.map(q => {
+        let dates = q.dates ? q.dates.map(d => new Date(d)) : [];
+        return  { ...q, dates};
+      });
+      this.bar = { ...bar, id: barId, quests };
       this.initCurrentQuest();
       this.initQrCode(this.bar);
 
       this.subscriptions.push(this.barService.getQuestAddedObservable().subscribe(quest => {
+        let index = this.bar!.quests.findIndex((q: Quest) => q.id == quest.id);
+        if (index >= 0) {
+          this.bar!.quests.splice(index, 1);
+        }
         this.bar!.quests.push(quest);
         this.initCurrentQuest();
         this.initQrCode(this.bar!);
@@ -63,9 +71,6 @@ export class BarkeeperAdminComponent implements OnInit, OnDestroy {
     if (this.bar) {
       let date = new Date();
       let hour = date.getHours();
-      console.log(`date: ${date}`);
-      console.log(`date: ${hour}`);
-
       this.currentQuestIndex = this.bar!.quests.findIndex(q => { return this.isInTime(q, date, hour); });
     }
   }
@@ -112,6 +117,13 @@ export class BarkeeperAdminComponent implements OnInit, OnDestroy {
   public openAddQuestDialog() {
     this.dialog.open(AddQuestDialogComponent, {
       data: { bar: this.bar },
+      autoFocus: false
+    });
+  }
+
+  public openEditQuestDialog(quest: Quest) {
+    this.dialog.open(AddQuestDialogComponent, {
+      data: { bar: this.bar, quest },
       autoFocus: false
     });
   }

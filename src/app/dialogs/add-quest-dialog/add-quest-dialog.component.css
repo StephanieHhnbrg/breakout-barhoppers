@@ -1,3 +1,11 @@
 mat-form-field {
   width: 100%;
 }
+
+.view-state mat-icon {
+  transform: scale(0.8) translateY(8px);
+}
+
+.edit-button {
+  float: right;
+}

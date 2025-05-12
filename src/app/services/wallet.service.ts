@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {
   Connection,
   PublicKey,
@@ -31,6 +31,7 @@ export class WalletService {
   private mintAddress = new PublicKey(environment.mintAddressB58);
   private walletConnected$ = new BehaviorSubject<boolean>(false);
   private tokensUpdated$ = new BehaviorSubject<number>(0);
+  private nftAdded$ = new Subject<{ name: string, uri: string }>();
   private numberOfTokens = 0;
 
   private readonly TOKEN_PROGRAM_ID = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA';
@@ -41,22 +42,25 @@ export class WalletService {
     // this.connection = new Connection(`https://devnet.helius-rpc.com/?api-key=${environment.heliusApiKey}`, 'confirmed');
   }
 
-  public async connectWallet(walletAddress: string, privateKey: string) {
+  public async connectWallet(walletAddress: string, privateKey: string, firstSignIn: boolean) {
     this.publicKey = new PublicKey(walletAddress);
     this.signer = await this.createSignerFromDecryptedKey(privateKey);
     this.payer = this.decryptionService.getKeyPairFromSecretKey(environment.payerSecretKey);
 
     this.metaplex = Metaplex.make(this.connection)
       .use(keypairIdentity(this.payer));
-
+    if (firstSignIn) {
+      await this.initAccount();
+    }
     this.walletConnected$.next(true);
 
-    try {
-      this.chargeUpPayerAccount();
-      this.initAccount();
-
-    } catch (e) {
-      console.error("Charging payer account without success: ", e);
+    let balance = await this.getPayerAccountBalance();
+    if (balance < 2) {
+      try {
+        await this.chargeUpPayerAccount();
+      } catch (e) {
+        console.error("Charging payer account without success: ", e);
+      }
     }
 
   }
@@ -88,9 +92,11 @@ export class WalletService {
       signature: airdropSignature,
       ...latestBlockHash,
     });
+  }
 
+  public async getPayerAccountBalance(): Promise<number> {
     let balance = await this.connection.getBalance(this.payer.publicKey);
-    console.log(`Balance: ${balance / LAMPORTS_PER_SOL} SOL`);
+    return balance / LAMPORTS_PER_SOL;
   }
 
   private async initAccount() {
@@ -102,8 +108,6 @@ export class WalletService {
 
     const accountInfo = await this.connection.getAccountInfo(associatedTokenAddress);
     if (accountInfo === null) {
-
-
       const transaction = new Transaction().add(
         createAssociatedTokenAccountInstruction(
           this.payer.publicKey,
@@ -131,11 +135,15 @@ export class WalletService {
     return this.tokensUpdated$.asObservable();
   }
 
+  public getNftAddedObservable(): Observable<{ name: string, uri: string }> {
+    return this.nftAdded$.asObservable();
+  }
+
   public getWalletConnectedObservable(): Observable<boolean> {
     return this.walletConnected$.asObservable();
   }
 
-  public async fetchNFTsByOwner(): Promise<any[]> {
+  public async fetchNFTsByOwner(): Promise<{name: string, uri: string}[]> {
     if (!this.metaplex || !this.publicKey) {
       throw new Error('Wallet not connected');
     }
@@ -182,6 +190,7 @@ export class WalletService {
       tokenOwner: this.publicKey
     });
 
+    this.nftAdded$.next({name, uri});
     return nft.address;
   }
 
@@ -220,9 +229,6 @@ export class WalletService {
 
     this.numberOfTokens += amount;
     this.tokensUpdated$.next(this.numberOfTokens);
-
-    let balance = await this.connection.getBalance(this.payer.publicKey);
-    console.log(`Balance: ${balance / LAMPORTS_PER_SOL} SOL`);
   }
 
   public async transferTokens(toWallet: PublicKey, amount: number = 50) {

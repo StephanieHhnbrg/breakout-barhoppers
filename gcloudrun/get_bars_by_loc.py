@@ -22,8 +22,33 @@ def fetch_data():
 
   result = []
   for doc in docs:
-    data = doc.to_dict()
-    result.append(data)
+    bar = doc.to_dict()
+    bar["quests"] = get_quests(bar)
+    result.append(bar)
+  return result
+
+
+def find_quest_by_id(id):
+  db = firestore.Client(database='barhoppers')
+  doc_ref = db.collection('quests').document(id)
+  doc = doc_ref.get()
+
+  if doc.exists:
+    quest = doc.to_dict()
+    quest["id"] = id
+    return quest
+  else:
+    return None
+
+
+def get_quests(bar):
+  quests = bar.get("quests", [])
+  result = []
+
+  for quest_id in quests:
+    quest = find_quest_by_id(quest_id)
+    if quest:
+      result.append(quest)
   return result
 
 
@@ -33,13 +58,18 @@ ALLOWED_ORIGINS = [
 ]
 
 
+def get_allowed_origin(request):
+  origin = request.headers.get('Origin', '')
+  if origin in ALLOWED_ORIGINS:
+    return origin
+  return ALLOWED_ORIGINS[0]
+
+
 def handle_cors(request):
   response = make_response()
   response.status_code = 204
-  origin = request.headers.get('Origin')
-  if origin in ALLOWED_ORIGINS:
-    response.headers['Access-Control-Allow-Origin'] = origin
-  response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+  response.headers['Access-Control-Allow-Origin'] = get_allowed_origin(request)
+  response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
   response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
   return response
 
@@ -47,8 +77,5 @@ def handle_cors(request):
 def create_response(request, data):
   response = make_response(jsonify(data))
   response.status_code = 200
-  origin = request.headers.get('Origin')
-  if origin in ALLOWED_ORIGINS:
-    response.headers['Access-Control-Allow-Origin'] = origin
+  response.headers['Access-Control-Allow-Origin'] = get_allowed_origin(request)
   return response
-
