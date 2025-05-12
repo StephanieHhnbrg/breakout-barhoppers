@@ -14,6 +14,7 @@ import {EditBarHoursDialogComponent} from '../../dialogs/edit-bar-hours-dialog/e
 import {AddQuestDialogComponent} from '../../dialogs/add-quest-dialog/add-quest-dialog.component';
 import {getHoursString} from '../../utils/hours-formatting.utils';
 import {RedeemVoucherDialogComponent} from '../../dialogs/redeem-voucher-dialog/redeem-voucher-dialog.component';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-barkeeper-admin',
@@ -23,6 +24,7 @@ import {RedeemVoucherDialogComponent} from '../../dialogs/redeem-voucher-dialog/
     MatIconModule,
     ToolbarComponent,
     QRCodeComponent,
+    MatCheckboxModule,
   ],
   templateUrl: './barkeeper-admin.component.html',
   styleUrl: './barkeeper-admin.component.css'
@@ -30,7 +32,7 @@ import {RedeemVoucherDialogComponent} from '../../dialogs/redeem-voucher-dialog/
 export class BarkeeperAdminComponent implements OnInit, OnDestroy {
 
   public bar: Bar | undefined;
-  public currentQuest: Quest | undefined;
+  public currentQuestIndex: number = -1;
   public qrData = '';
   public statistics: BarStatistics = { checkins: 0, questFulfilled: 0 , guests: 0 };
   private subscriptions: Subscription[] = [];
@@ -43,9 +45,16 @@ export class BarkeeperAdminComponent implements OnInit, OnDestroy {
     let barId = this.userService.getCurrentUser()!.barId!;
     this.subscriptions.push(this.barService.getBarById(barId).subscribe(bar => {
       this.bar = bar;
-      this.initQrCode(this.bar);
       this.initCurrentQuest();
+      this.initQrCode(this.bar);
+
+      this.subscriptions.push(this.barService.getQuestAddedObservable().subscribe(quest => {
+        this.bar!.quests.push(quest);
+        this.initCurrentQuest();
+        this.initQrCode(this.bar!);
+      }))
     }));
+
 
     this.subscriptions.push(this.barService.getBarStatistics(barId).subscribe(stats => { this.statistics = stats}));
   }
@@ -53,31 +62,44 @@ export class BarkeeperAdminComponent implements OnInit, OnDestroy {
   private initCurrentQuest() {
     if (this.bar) {
       let date = new Date();
-      let day = date.getDay() == 0 ? 7 : date.getDay();
       let hour = date.getHours();
-      this.currentQuest = this.bar!.quests.find(q => {
-        (q.regularDays && q.regularDays.length > 0 && q.regularDays?.includes(day) && this.isInTime(q, date, hour)) ||
-        ((!q.regularDays || q.regularDays.length == 0) && this.isInTime(q, date, hour));
-      });
+      console.log(`date: ${date}`);
+      console.log(`date: ${hour}`);
+
+      this.currentQuestIndex = this.bar!.quests.findIndex(q => { return this.isInTime(q, date, hour); });
     }
   }
 
-  private initQrCode(bar: Bar) {
+  private initQrCode(bar: Bar, addQuest: boolean = false) {
+    let currentQuest = addQuest && this.currentQuestIndex >= 0 ? this.bar?.quests[this.currentQuestIndex] : undefined;
     this.qrData = JSON.stringify({
       type: 'bar-checkin',
       barId: bar.id,
       barName: bar.name,
-      questId: this.currentQuest ? this.currentQuest.id : undefined,
-      questName: this.currentQuest ? this.currentQuest.name : undefined,
+      questId: currentQuest ? currentQuest.id : undefined,
+      questName: currentQuest ? currentQuest.name : undefined,
     });
   }
 
-  private isInTime(q: Quest, date: Date, hour: number) {
-    let isWithinDates = q.startDate < date && date < q.endDate;
+  public updateQrCode(questFullfilled: boolean) {
+    this.initQrCode(this.bar!, questFullfilled);
+  }
 
+  private isInTime(q: Quest, date: Date, hour: number): boolean {
     let sameDayValid = q.startHour < q.endHour && q.startHour < hour && hour < q.endHour;
     let diffDayValid = q.startHour > q.endHour && (q.startHour < hour || hour < q.endHour);
-    return isWithinDates && (sameDayValid || diffDayValid);
+    if (q.regularDays && q.regularDays.length > 0) {
+      let day = date.getDate() == 0 ? 7 : date.getDate();
+      let yesterday = day == 1 ? 7 : day-1;
+
+      return (sameDayValid && q.regularDays.includes(day))
+        || (diffDayValid && ((q.startHour < hour && q.regularDays.includes(day)) || (hour < q.endHour && q.regularDays.includes(yesterday))));
+    } else if (q.dates && q.dates.length > 0){
+      let isWithinDates = q.dates.findIndex(d => { return d.getDate() == date.getDate() && d.getMonth() == date.getMonth() && d.getFullYear() == date.getFullYear(); } ) >= -1;
+      return isWithinDates && (sameDayValid || diffDayValid);
+    }
+
+    return false;
   }
 
   public openEditBarHoursDialog(kind: string) {
@@ -89,7 +111,7 @@ export class BarkeeperAdminComponent implements OnInit, OnDestroy {
 
   public openAddQuestDialog() {
     this.dialog.open(AddQuestDialogComponent, {
-      data: this.bar,
+      data: { bar: this.bar },
       autoFocus: false
     });
   }

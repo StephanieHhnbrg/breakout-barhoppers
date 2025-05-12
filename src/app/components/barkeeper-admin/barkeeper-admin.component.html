@@ -12,7 +12,7 @@
         <mat-icon (click)="openEditBarHoursDialog('Happy')" class="clickable-icon">edit</mat-icon><br />
         <span [innerHtml]="getHoursString(bar.happyHours)"></span>
       </small><br />
-      <small><a class="redeem" (click)="openRedeemVoucherDialog()"><mat-icon>qr_code</mat-icon>Redeem guests vouchers</a></small><br />
+      <small><a class="redeem purple-text" (click)="openRedeemVoucherDialog()"><mat-icon>qr_code</mat-icon>Redeem guests vouchers</a></small><br />
 
       <div class="qr-container">
         <div class="qr-code">
@@ -22,6 +22,9 @@
             [width]="150"
             [errorCorrectionLevel]="'M'">
           </qrcode>
+          <div *ngIf="currentQuestIndex >= 0">
+            <mat-checkbox (change)="updateQrCode($event.checked)">Quest fulfilled: {{bar.quests[currentQuestIndex].name}}</mat-checkbox>
+          </div>
         </div>
       </div>
 
@@ -30,6 +33,9 @@
         <mat-icon (click)="openAddQuestDialog()" class="clickable-icon">add</mat-icon>
       </p>
       <small *ngIf="bar.quests.length == 0">No quests created.</small>
+      <small *ngFor="let q of bar.quests; index as i">
+        * {{q.name}} <small *ngIf="currentQuestIndex == i" class="purple-text">(now)</small>
+      </small>
 
       <p>&nbsp;</p>
       <p><mat-icon>analytics</mat-icon>Stats</p>

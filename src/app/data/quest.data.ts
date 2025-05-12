@@ -8,6 +8,5 @@ export interface Quest {
   startHour: number,
   endHour: number,
 
-  startDate: Date,
-  endDate: Date,
+  dates?: Date[],
 }

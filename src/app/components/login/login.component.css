@@ -28,7 +28,7 @@ app-g-login-button {
 
 .buttons a, .buttons a:visited  {
   text-align: center;
-  color: green;
+  color: rgba(131, 58, 180, 1);
   text-decoration: none;
 }
 

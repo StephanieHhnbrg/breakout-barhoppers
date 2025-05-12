@@ -16,6 +16,7 @@ export const environment = {
     postCreateBar: "https://post-create-bar-2xrgeo6rqq-ey.a.run.app",
     postCreateBarCheckInEvent: "https://post-create-bar-check-in-event-2xrgeo6rqq-ey.a.run.app",
     postCreateFriendRequest: "https://post-create-friend-req-2xrgeo6rqq-ey.a.run.app",
+    postCreateQuest: "https://post-create-quest-xxxxxx-ey.a.run.app",
     postSignUp: "https://sign-up-2xrgeo6rqq-ey.a.run.app",
     postUpdateBar: "https://post-update-bar-2xrgeo6rqq-ey.a.run.app",
     postUpdateFriendRequest: "https://post-accept-friend-req-2xrgeo6rqq-ey.a.run.app"

@@ -66,7 +66,6 @@ export class FriendQrCodeScannerComponent implements OnInit, OnDestroy {
           try {
             const userData = JSON.parse(result.getText());
             if (userData.type === 'friend-request') {
-              console.log(userData);
               this.addFriend({name: userData.username, mail: userData.mail});
               this.stopScanning();
             }
