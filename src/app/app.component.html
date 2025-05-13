@@ -1,6 +1,7 @@
-<div [ngClass]="{'phone': isBigScreen(), 'full-screen': !isBigScreen()}">
-  <div [ngClass]="{'top-notch': isBigScreen()}"></div>
-  <div [ngClass]="{'phone-screen': isBigScreen()}">
+<img src="assets/background.jpg" class="background" *ngIf="!isMobile" />
+<div [ngClass]="{'phone':!isMobile, 'full-screen': isMobile}">
+  <div [ngClass]="{'top-notch': !isMobile}"></div>
+  <div [ngClass]="{'phone-screen': !isMobile}">
     <router-outlet></router-outlet>
   </div>
 </div>
