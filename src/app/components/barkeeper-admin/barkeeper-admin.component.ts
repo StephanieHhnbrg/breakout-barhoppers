@@ -12,9 +12,10 @@ import {Quest} from '../../data/quest.data';
 import {MatDialog} from '@angular/material/dialog';
 import {EditBarHoursDialogComponent} from '../../dialogs/edit-bar-hours-dialog/edit-bar-hours-dialog.component';
 import {AddQuestDialogComponent} from '../../dialogs/add-quest-dialog/add-quest-dialog.component';
-import {getHoursString} from '../../utils/hours-formatting.utils';
+import {getOpeningHoursString} from '../../utils/hours-formatting.utils';
 import {RedeemVoucherDialogComponent} from '../../dialogs/redeem-voucher-dialog/redeem-voucher-dialog.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import {findActiveQuestIndex} from '../../utils/quest.utils';
 
 @Component({
   selector: 'app-barkeeper-admin',
@@ -69,9 +70,7 @@ export class BarkeeperAdminComponent implements OnInit, OnDestroy {
 
   private initCurrentQuest() {
     if (this.bar) {
-      let date = new Date();
-      let hour = date.getHours();
-      this.currentQuestIndex = this.bar!.quests.findIndex(q => { return this.isInTime(q, date, hour); });
+      this.currentQuestIndex = findActiveQuestIndex(this.bar!);
     }
   }
 
@@ -90,22 +89,6 @@ export class BarkeeperAdminComponent implements OnInit, OnDestroy {
     this.initQrCode(this.bar!, questFullfilled);
   }
 
-  private isInTime(q: Quest, date: Date, hour: number): boolean {
-    let sameDayValid = q.startHour < q.endHour && q.startHour < hour && hour < q.endHour;
-    let diffDayValid = q.startHour > q.endHour && (q.startHour < hour || hour < q.endHour);
-    if (q.regularDays && q.regularDays.length > 0) {
-      let day = date.getDate() == 0 ? 7 : date.getDate();
-      let yesterday = day == 1 ? 7 : day-1;
-
-      return (sameDayValid && q.regularDays.includes(day))
-        || (diffDayValid && ((q.startHour < hour && q.regularDays.includes(day)) || (hour < q.endHour && q.regularDays.includes(yesterday))));
-    } else if (q.dates && q.dates.length > 0){
-      let isWithinDates = q.dates.findIndex(d => { return d.getDate() == date.getDate() && d.getMonth() == date.getMonth() && d.getFullYear() == date.getFullYear(); } ) >= -1;
-      return isWithinDates && (sameDayValid || diffDayValid);
-    }
-
-    return false;
-  }
 
   public openEditBarHoursDialog(kind: string) {
     this.dialog.open(EditBarHoursDialogComponent, {
@@ -135,7 +118,7 @@ export class BarkeeperAdminComponent implements OnInit, OnDestroy {
   }
 
   public getHoursString(hours: {day: number, start: number, end: number}[]): string {
-   return getHoursString(hours); // util function
+   return getOpeningHoursString(hours); // util function
   }
 
   public ngOnDestroy() {

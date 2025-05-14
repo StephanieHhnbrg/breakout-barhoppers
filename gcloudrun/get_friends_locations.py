@@ -50,7 +50,7 @@ def find_user_check_in(mail):
     bar = find_bar_by_id(bar_id)
     if not bar:
       return None
-    return {"name": user.get("name"), "picture": user.get("picture"), "lat": bar.get("lat"), "lng": bar.get("lng")}
+    return {"name": user.get("name"), "picture": user.get("picture"), "lat": bar.get("lat"), "lng": bar.get("lng"), "barId": bar_id}
 
   return None
 

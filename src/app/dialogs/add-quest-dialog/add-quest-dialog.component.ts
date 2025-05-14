@@ -13,7 +13,7 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatDatepickerInputEvent, MatDatepickerModule} from '@angular/material/datepicker';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatSelectModule} from '@angular/material/select';
-import {getDayString} from '../../utils/hours-formatting.utils';
+import {addAMPMsuffixToHour, getDayString} from '../../utils/hours-formatting.utils';
 import { v4 as uuidv4 } from 'uuid';
 
 @Component({
@@ -179,9 +179,7 @@ export class AddQuestDialogComponent implements OnInit {
   }
 
   public formatHour(h: number): string {
-    const suffix = h >= 12 ? 'PM' : 'AM';
-    const hour12 = h % 12 === 0 ? 12 : h % 12;
-    return `${hour12} ${suffix}`;
+    return addAMPMsuffixToHour(h);
   };
 
   private getWeekdayOptions(): {value: number, text: string}[]  {

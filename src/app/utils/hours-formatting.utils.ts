@@ -1,4 +1,4 @@
-export function getHoursString(hours: {day: number, start: number, end: number}[]): string {
+export function getOpeningHoursString(hours: {day: number, start: number, end: number}[]): string {
   if (hours.length == 0) {
     return "&emsp;No hours set!";
   }
@@ -33,10 +33,17 @@ export function getHoursString(hours: {day: number, start: number, end: number}[
 }
 
 function getHourString(startDay: number, endDay: number, startHour: number, endHour: number): string {
+  let hourRange = `${addAMPMsuffixToHour(startHour)} - ${addAMPMsuffixToHour(endHour)}`;
   if (startDay == endDay) {
-    return `${getDayString(startDay)}: ${startHour} - ${endHour}`;
+    return `${getDayString(startDay)}: ${hourRange}`;
   }
-  return `${getDayString(startDay)} - ${getDayString(endDay)}: ${startHour} - ${endHour}`;
+  return `${getDayString(startDay)} - ${getDayString(endDay)}: ${hourRange}`;
+}
+
+export function addAMPMsuffixToHour(h: number): string {
+  const suffix = h >= 12 ? 'PM' : 'AM';
+  const hour12 = h % 12 === 0 ? 12 : h % 12;
+  return `${hour12} ${suffix}`;
 }
 
 export function getDayString(day: number): string {

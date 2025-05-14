@@ -53,7 +53,7 @@ export class UserService {
     this.http.callGCloudRunPostRequest(endpoint, payload);
   }
 
-  public getFriendsLocations(): Observable<{name: string, picture: string, lat: number, lng: number}[]> {
+  public getFriendsLocations(): Observable<{name: string, picture: string, lat: number, lng: number, barId: string}[]> {
     if (this.user) {
       let endpoint = `${environment.endpoints.getFriendsLocations}?user=${this.user!.mail}`;
       return this.http.callGCloudRunGetRequest(endpoint);
